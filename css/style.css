@@ -163,6 +163,9 @@ body {
     color: #fff;
 }
 
+#footer p span {
+    color: var(--primary);
+}
 
 
 /* ================= HERO SECTION ================= */
