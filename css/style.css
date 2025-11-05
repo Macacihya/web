@@ -312,12 +312,11 @@ section {
     #hero h1 {
         padding-top: 10px;
         padding-bottom: 20px;
-        font-size: 25px;
     }
 
     #hero p {
         font-size: 14px;
-        padding-bottom: 25px;
+        padding-bottom: 40px;
     }
 
     .navbar .navbar-logo {
