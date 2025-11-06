@@ -1,5 +1,5 @@
 /* =========================================
-   SMARTNOTE LANDING PAGE - STYLE.CSS
+    SMARTNOTE LANDING PAGE - STYLE.CSS
    ========================================= */
 
 /* ROOT */
@@ -27,7 +27,7 @@ body {
 }
 
 /* =========================================
-   NAVBAR
+    NAVBAR
    ========================================= */
 .navbar {
     background-color: rgba(1, 1, 1, 0.5);
@@ -84,7 +84,7 @@ body {
 .nav-link1 {
     border: 1.5px solid rgba(255, 255, 255, 0.5);
     border-radius: 0.5rem;
-    padding: 7px 15px;
+    padding: 10px 15px;
     color: #ffffff;
     background-color: transparent;
     transition: all 0.3s ease;
@@ -102,7 +102,7 @@ body {
 .nav-link2 {
     border: 1.5px solid rgba(40, 167, 69, 0.5);
     border-radius: 0.5rem;
-    padding: 7px 15px;
+    padding: 10px 15px;
     color: var(--primary);
     background-color: transparent;
     transition: all 0.3s ease;
@@ -126,7 +126,7 @@ body {
 }
 
 /* =========================================
-   HERO SECTION
+    HERO SECTION
    ========================================= */
 .hero-section {
     position: relative;
@@ -181,7 +181,7 @@ body {
 }
 
 /* =========================================
-   KEUNGGULAN SMARTNOTE
+    KEUNGGULAN SMARTNOTE
    ========================================= */
 .text-primary-gradient {
     background-image: linear-gradient(#000000 100%);
@@ -224,7 +224,7 @@ body {
 }
 
 /* =========================================
-   KONTAK & FOOTER
+    KONTAK & FOOTER
    ========================================= */
 #hubungi-kami {
     scroll-margin-top: 70px;
@@ -236,7 +236,7 @@ footer {
 }
 
 /* =========================================
-   MODAL
+    MODAL
    ========================================= */
 .modal {
     z-index: 2000;
@@ -247,13 +247,15 @@ footer {
 }
 
 /* =========================================
-   GLOBAL
+    GLOBAL
    ========================================= */
 section {
     padding: 60px 0;
 }
 
 #hero,
+#cara-kerja,
+#testimoni,
 #fitur-unggulan,
 #hubungi-kami {
     scroll-margin-top: 75px;
@@ -266,9 +268,13 @@ section {
 /* Tombol navbar responsif */
 
 /* Laptop */
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
+
     .nav-link1,
     .nav-link2 {
+        width: 30%;
+        font-size: 1rem;
+        border-width: 1px;
         display: block;
         width: 100%;
         text-align: center;
@@ -297,6 +303,7 @@ section {
     .navbar .nav-link, .navbar .nav-link1, .navbar .nav-link2 {
         font-size: 14px;
     }
+
     .nav-link1,
     .nav-link2 {
         width: 30%;
@@ -326,6 +333,7 @@ section {
     .navbar .nav-link, .navbar .nav-link1, .navbar .nav-link2 {
         font-size: 15px;
     }
+
     .nav-link1,
     .nav-link2 {
         font-size: 0.9rem;
@@ -349,5 +357,53 @@ section {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* =========================================
+    TAMBAHAN: CARA KERJA, TESTIMONI, CTA
+   ========================================= */
+
+/* Animasi fade in */
+.animate-fade {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1.2s ease forwards;
+}
+
+/* CTA section */
+#cta {
+    background: linear-gradient(135deg, #00d462 0%);
+    color: #fff;
+    text-align: center;
+    padding: 80px 0;
+}
+
+#cta .btn {
+    border-radius: 2rem;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+#cta .btn:hover {
+    transform: scale(1.05);
+    background: #e8f5e9;
+}
+
+/* Responsif tambahan */
+@media (max-width: 768px) {
+
+    #cara-kerja h2,
+    #testimoni h2,
+    #cta h2 {
+        font-size: 1.8rem;
+    }
+
+    #cta p {
+        font-size: 1rem;
+    }
+
+    #cta .btn {
+        font-size: 1rem;
+        padding: 10px 20px;
     }
 }
