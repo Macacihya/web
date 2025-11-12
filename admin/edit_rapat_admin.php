@@ -87,9 +87,11 @@
     width: 100%;
     }
 
-    .form-check label {
-    text-transform: capitalize;
-    }
+    .form-check-label {
+    margin-left: 4px;
+    font-size: 15px;
+    cursor: pointer;
+}
 
     .topbar {
     display: flex;
@@ -120,8 +122,7 @@
     margin-top: 10px;
     width: 50%;
     }
-
-    .added-item {
+   .added-item {
       background: #f8f9fa;
       border-radius: 8px;
       padding: 6px 10px;
@@ -129,6 +130,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+     .select-all-box {
+      background-color: #f8f9fa; /* abu-abu muda */
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-top: 5px;
+      margin-bottom: 8px;
+      border: 1px solid #e0e0e0;
     }
   </style>
   <link rel="stylesheet" href="../css/admin.min.css">
@@ -141,7 +150,7 @@
       data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
       <i class="bi bi-list"></i>
     </button>
-  </nav>
+</nav>
 
   <!-- Sidebar -->
   <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
@@ -201,10 +210,12 @@
 
             <div class="dropdown-menu p-2">
               <input type="text" class="form-control search-box" id="searchInput" placeholder="Cari nama notulen...">
-              <div class="form-check mt-2">
-                <input class="form-check-input" type="checkbox" id="selectAll">
-                <label class="form-check-label" for="selectAll">Pilih Semua</label>
-              </div>
+              <div class="select-all-box">
+          <div class="form-check m-0">
+            <input class="form-check-input" type="checkbox" id="selectAll">
+            <label class="form-check-label fw-semibold" for="selectAll">Pilih Semua</label>
+          </div>
+        </div>
               <div id="notulenList" class="mt-2">
                 <div class="form-check">
                   <input class="form-check-input notulen-checkbox" type="checkbox" value="Della Reska" id="n1">
