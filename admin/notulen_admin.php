@@ -101,28 +101,51 @@
                     <input type="file" class="form-control" id="fileInput">
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Peserta Notulen</label>
-                    <div class="p-3 rounded" style="background-color: #ffffff;">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="rian" id="rian">
-                            <label class="form-check-label" for="rian">rian</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="tes" id="tes">
-                            <label class="form-check-label" for="tes">tes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="yudha" id="yudha">
-                            <label class="form-check-label" for="yudha">yudha</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="rian12" id="rian12">
-                            <label class="form-check-label" for="rian12">rian12</label>
-                        </div>
-                    </div>
-                </div>
+                <!-- Dropdown Peserta -->
+        <div class="mb-3">
+            <label class="form-label">Peserta Notulen</label>
+            <div class="dropdown w-50">
+            <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Pilih Notulen
+            </button>
 
+            <div class="dropdown-menu p-2">
+                <input type="text" class="form-control search-box" id="searchInput" placeholder="Cari nama notulen...">
+                <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label" for="selectAll">Pilih Semua</label>
+                </div>
+                <div id="notulenList" class="mt-2">
+                <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Della Reska" id="n1">
+                    <label class="form-check-label" for="n1">Della Reska</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Andi Saputra" id="n2">
+                    <label class="form-check-label" for="n2">Andi Saputra</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Budi Santoso" id="n3">
+                    <label class="form-check-label" for="n3">Budi Santoso</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Citra Ayu" id="n4">
+                    <label class="form-check-label" for="n4">Citra Ayu</label>
+                </div>
+                </div>
+                <button type="button" class="btn btn-primary w-100 mt-3" id="addButton">Tambah</button>
+            </div>
+            </div>
+
+            <!-- List peserta -->
+            <div id="addedList" class="added-list mt-3">
+            <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
+            <div id="addedContainer">
+                <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+            </div>
+            </div>
+        </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-save px-4">Simpan</button>
                 </div>
@@ -209,6 +232,57 @@
                 }
             });
         }
+        // ===================
+    // Fungsi Dropdown Peserta
+    // ===================
+    const searchInput = document.getElementById('searchInput');
+    const notulenItems = document.querySelectorAll('#notulenList .form-check');
+    const selectAll = document.getElementById('selectAll');
+    const addButton = document.getElementById('addButton');
+    const addedContainer = document.getElementById('addedContainer');
+
+    // Search
+    searchInput.addEventListener('keyup', () => {
+        const filter = searchInput.value.toLowerCase();
+        notulenItems.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+
+    // Select all
+    selectAll.addEventListener('change', function () {
+        const allCheckboxes = document.querySelectorAll('.notulen-checkbox');
+        allCheckboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // Tambah peserta
+    addButton.addEventListener('click', function () {
+        const selected = document.querySelectorAll('.notulen-checkbox:checked');
+      addedContainer.innerHTML = ''; // Kosongkan dulu
+
+        if (selected.length === 0) {
+        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
+        return;
+        }
+
+        selected.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'added-item';
+        div.innerHTML = `${item.value} <button class="btn btn-sm btn-danger remove-btn">x</button>`;
+        addedContainer.appendChild(div);
+        });
+
+      // Tombol hapus
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            this.parentElement.remove();
+            if (addedContainer.children.length === 0) {
+            addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
+            }
+        });
+        });
+    });
     </script>
 </body>
 </html>
