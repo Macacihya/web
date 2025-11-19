@@ -107,10 +107,9 @@
                 <div>
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
-                        <li><a class="nav-link" href="dashboard_peserta.php"><i
-                                    class="bi bi-grid me-2"></i>Dashboard</a></li>
-                        <li><a class="nav-link" href="profile_peserta.php"><i
-                                    class="bi bi-person-circle me-2"></i>Profile</a></li>
+                        <li><a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                    </li>
+                        <li><a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                     </ul>
                 </div>
 

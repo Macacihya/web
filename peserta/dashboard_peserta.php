@@ -143,10 +143,10 @@
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
                         <li>
-                            <a class="nav-link" href="dashboard_pesertaa.html"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                            <a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
                         <li>
-                            <a class="nav-link" href="profile_peserta.html"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                            <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                     </ul>
                 </div>
@@ -165,10 +165,10 @@
             <h5 class="fw-bold mb-4 ms-3">Menu</h5>
             <ul class="nav flex-column">
                 <li>
-                    <a class="nav-link active" href="dashboard_pesertaa.html"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                    <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="profile_peserta.html"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                    <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
             </ul>
         </div>
@@ -193,21 +193,21 @@
                 <div class="highlight-card">
                     <span class="text-muted">31/12/2025</span>
                     <h6 class="mt-1 mb-1">Rapat Akhir Tahun</h6>
-                    <p>......</p>
+                    <p>Tinjauan kinerja dan pencapaian target sepanjang tahun serta proyeksi strategi tahun mendatang</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="highlight-card">
                     <span class="text-muted">30/12/2025</span>
                     <h6 class="mt-1 mb-1">Evaluasi Kinerja</h6>
-                    <p>......</p>
+                    <p>Pembahasan hasil kerja individual dan tim. Fokus pada peningkatan dan umpan balik konstruktif</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="highlight-card">
                     <span class="text-muted">29/12/2025</span>
                     <h6 class="mt-1 mb-1">Rapat Tim Proyek</h6>
-                    <p>......</p>
+                    <p>Koordinasi terakhir untuk memastikan semua tugas proyek selesai dan siap untuk pelaporan akhir</p>
                 </div>
             </div>
         </div>
@@ -372,7 +372,7 @@
                   <td>${item.tanggal}</td>
                   <td>${item.pembuat}</td>
                   <td class="text-center"> 
-                    <a href="detail_rapat_peserta.html?id=${nomorUrut - 1}" class="text-primary me-2 px-2" title="Lihat"><i class="bi bi-eye"></i></a>
+                    <a href="detail_rapat_peserta.php?id=${nomorUrut - 1}" class="text-primary me-2 px-2" title="Lihat"><i class="bi bi-eye"></i></a>
                     <a href="../file/notulen_rapat.pdf" class="text-success" title="Download" download> <i class="bi bi-download"></i></a>
                     
                     </td>
@@ -507,7 +507,7 @@
                 if (confirmLogout) {
                     // Menggunakan kunci 'adminData' yang sudah disepakati konsisten
                     localStorage.removeItem("adminData"); 
-                    window.location.href = "../login.html";
+                    window.location.href = "../login.php";
                 }
             });
             // logout mobile
@@ -517,7 +517,7 @@
                     const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
                     if (konfirmasiLogout) {
                         localStorage.removeItem("adminData");
-                        window.location.href = "../login.html";
+                        window.location.href = "../login.php";
                     }
                 });
             }
