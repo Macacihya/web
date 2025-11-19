@@ -1,3 +1,16 @@
+<?php
+require_once __DIR__ . '/../koneksi.php';
+
+// ambil 10 notulen terbaru
+$sql = "SELECT id, judul_rapat, tanggal_rapat, Lampiran, peserta, created_at FROM tambah_notulen ORDER BY created_at DESC LIMIT 10";
+$result = $conn->query($sql);
+$notulens = [];
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $notulens[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -172,129 +185,39 @@
             const logoutBtnMobile = document.getElementById("logoutBtnMobile");
 
             // Simulasi data
-            const notulenData = [{
-                    judul: "Rapat Akhir Tahun",
-                    tanggal: "31/12/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Evaluasi Kinerja",
-                    tanggal: "30/12/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Rapat Tim Proyek",
-                    tanggal: "29/09/2025",
-                    pembuat: "Sinta"
-                },
-                {
-                    judul: "Rapat Divisi",
-                    tanggal: "20/11/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Meeting Harian",
-                    tanggal: "12/11/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Koordinasi Bulanan",
-                    tanggal: "02/11/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Evaluasi Anggaran",
-                    tanggal: "25/10/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Kick Off Proyek Baru",
-                    tanggal: "15/10/2025",
-                    pembuat: "Sinta"
-                },
-                {
-                    judul: "Laporan Triwulan",
-                    tanggal: "28/09/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Briefing Pagi",
-                    tanggal: "07/09/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Rapat Koordinasi HR",
-                    tanggal: "20/08/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Presentasi Hasil Survei",
-                    tanggal: "13/08/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Rapat Pengembangan Produk Baru",
-                    tanggal: "20/07/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Finalisasi Strategi",
-                    tanggal: "29/06/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Laporan Keuangan dan Proyeksi",
-                    tanggal: "12/05/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Tinjauan Keamanan Data",
-                    tanggal: "09/04/2025",
-                    pembuat: "Hana"
-                }
-            ];
+            const notulenData = <?= json_encode($notulens, JSON_UNESCAPED_UNICODE) ?>;
 
             let currentPage = 1;
             let rowsPerPage = 10; // number or "all"
 
-            // Render table rows (menerima startIndex untuk nomor berkelanjutan)
             function renderTable(data, startIndex = 0) {
                 tableBody.innerHTML = "";
                 data.forEach((item, index) => {
                     const nomorUrut = startIndex + index + 1;
                     const tr = document.createElement("tr");
+
+                    // safe escape helper already defined (escapeHtml)
+                    const judul = escapeHtml(item.judul_rapat || '');
+                    const tanggal = escapeHtml(item.tanggal_rapat || '');
+                    // tampilkan pembuat (kalau kamu menyimpan pembuat di DB; jika tidak, bisa ambil dari session di server)
+                    // aku menggunakan created_at atau peserta sebagai placeholder pembuat jika perlu
+                    const pesertaText = escapeHtml(item.peserta || '');
+
                     tr.innerHTML = `
             <td>${nomorUrut}</td>
-            <td>${escapeHtml(item.judul)}</td>
-            <td>${escapeHtml(item.tanggal)}</td>
-            <td>${escapeHtml(item.pembuat)}</td>
+            <td>${judul}</td>
+            <td>${tanggal}</td>
+            <td>${pesertaText}</td>
             <td class="text-center">
-  <!-- Tombol Lihat -->
-  <a href="detail_rapat_admin.php?id=${nomorUrut - 1}" 
-     class="btn btn-sm text-primary" 
-     title="Lihat">
-     <i class="bi bi-eye"></i>
-  </a>
-
-  <!-- Tombol Edit -->
-  <a href="edit_rapat_admin.php?id=${nomorUrut - 1}" 
-     class="btn btn-sm text-success" 
-     title="Edit">
-     <i class="bi bi-pencil"></i>
-  </a>
-
-  <!-- Tombol Hapus -->
-  <button class="btn btn-sm text-danger btn-delete" 
-          data-index="${nomorUrut - 1}" 
-          title="Hapus">
-      <i class="bi bi-trash"></i>
-  </button>
-</td>
-
-          `;
+                <a href="detail_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-primary" title="Lihat"><i class="bi bi-eye"></i></a>
+                <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-success" title="Edit"><i class="bi bi-pencil"></i></a>
+                <button class="btn btn-sm text-danger btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
                     tableBody.appendChild(tr);
                 });
             }
+
 
             // Escape teks sederhana untuk keamanan XSS minimal (untuk data static ini cukup)
             function escapeHtml(text) {
@@ -316,21 +239,21 @@
                 });
             }
 
-            // Filtering
             function getFilteredData() {
                 const keyword = (searchInput.value || "").toLowerCase();
                 const selectedPembuat = filterPembuat.value;
 
                 return notulenData.filter(item => {
-                    const cocokKeyword =
-                        item.judul.toLowerCase().includes(keyword) ||
-                        item.tanggal.toLowerCase().includes(keyword) ||
-                        item.pembuat.toLowerCase().includes(keyword);
+                    const judul = (item.judul_rapat || '').toLowerCase();
+                    const tanggal = (item.tanggal_rapat || '').toLowerCase();
+                    const peserta = (item.peserta || '').toLowerCase();
 
-                    const cocokPembuat = selectedPembuat === "" || item.pembuat === selectedPembuat;
+                    const cocokKeyword = judul.includes(keyword) || tanggal.includes(keyword) || peserta.includes(keyword);
+                    const cocokPembuat = selectedPembuat === "" || (item.pembuat || '') === selectedPembuat; // jika kamu punya kolom pembuat
                     return cocokKeyword && cocokPembuat;
                 });
             }
+
 
             // Pagination helpers
             function paginate(data) {
@@ -365,12 +288,28 @@
                 }
             }
 
-            // Update table utama
             function updateTable() {
                 const filteredData = getFilteredData();
                 const totalRows = filteredData.length;
-                const startIndex = (rowsPerPage === "all" || totalRows === 0) ? 0 : (currentPage - 1) *
-                    rowsPerPage;
+
+                // JIKA BELUM ADA NOTULEN
+                if (totalRows === 0) {
+                    tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    Belum ada data notulen.
+                </td>
+            </tr>
+        `;
+                    pagination.innerHTML = "";
+                    dataInfo.textContent = "Menampilkan 0 dari 0 data";
+                    return;
+                }
+
+                const startIndex = (rowsPerPage === "all" || totalRows === 0)
+                    ? 0
+                    : (currentPage - 1) * rowsPerPage;
+
                 const paginatedData = paginate(filteredData);
                 renderTable(paginatedData, startIndex);
                 renderPagination(totalRows);
@@ -379,6 +318,7 @@
                 const end = start + paginatedData.length - 1;
                 dataInfo.textContent = `Menampilkan ${start}-${end} dari ${totalRows} data`;
             }
+
 
             // Event listeners - search/filter/rowsPerPage
             searchInput.addEventListener("input", () => {
@@ -396,25 +336,38 @@
                 updateTable();
             });
 
-            // Delete handler (event delegation)
-            document.addEventListener("click", function (e) {
+            document.addEventListener("click", async function (e) {
                 const btn = e.target.closest(".btn-delete");
                 if (!btn) return;
+                const id = btn.dataset.id;
+                if (!id) return;
 
-                const globalIndex = parseInt(btn.dataset.index, 10);
-                if (Number.isNaN(globalIndex)) return;
+                if (!confirm("Yakin mau hapus data ini?")) return;
 
-                if (confirm("Yakin mau hapus data ini?")) {
-                    // Hapus berdasarkan index dalam notulenData
-                    notulenData.splice(globalIndex, 1);
-                    // reset ke halaman 1 jika halaman sekarang melewati total halaman baru
-                    currentPage = 1;
-                    // re-populate filter options (bila pembuat berubah karena penghapusan)
-                    filterPembuat.innerHTML = '<option value="">Semua Pembuat</option>';
-                    populateFilterPembuat();
-                    updateTable();
+                try {
+                    const res = await fetch('../proses/proses_hapus_notulen.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        // remove from local array and re-render
+                        const idx = notulenData.findIndex(n => String(n.id) === String(id));
+                        if (idx !== -1) notulenData.splice(idx, 1);
+                        // refresh filter options and table
+                        filterPembuat.innerHTML = '<option value="">Semua Pembuat</option>';
+                        populateFilterPembuat();
+                        updateTable();
+                    } else {
+                        alert(json.message || 'Gagal menghapus notulen.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Terjadi kesalahan saat menghapus.');
                 }
             });
+
 
             // Logout buttons
             function setupLogoutButtons() {

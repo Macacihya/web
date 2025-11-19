@@ -1,3 +1,19 @@
+<?php
+require_once __DIR__ . '/../koneksi.php';
+
+// ambil semua user dengan role peserta
+$users = [];
+$q = $conn->prepare("SELECT id, nama, email FROM users WHERE role = 'peserta' ORDER BY nama ASC");
+if ($q) {
+    $q->execute();
+    $res = $q->get_result();
+    while ($r = $res->fetch_assoc()) {
+        $users[] = $r;
+    }
+    $q->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -8,8 +24,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/admin.min.css">
-    
-    <script src="https://cdn.tiny.cloud/1/cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script src="https://cdn.tiny.cloud/1/cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
 </head>
 
 <body>
@@ -27,9 +44,12 @@
                 <div>
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
-                        <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-                        <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
-                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                        <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                        </li>
+                        <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
+                                Pengguna</a></li>
+                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -47,13 +67,15 @@
             <h5 class="fw-bold mb-4 ms-3">Menu</h5>
             <ul class="nav flex-column">
                 <li><a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
-                <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
+                <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
+                        Pengguna</a></li>
                 <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
             </ul>
         </div>
 
         <div class="text-center">
-            <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i
+                    class="bi bi-box-arrow-right me-2"></i>Logout</button>
         </div>
     </div>
 
@@ -80,7 +102,8 @@
                 Notulen berhasil disimpan!!!
             </div>
 
-            <form id="notulenForm">
+            <form id="notulenForm" action="../proses/proses_simpan_notulen.php" method="POST"
+                enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label">Judul</label>
                     <input type="text" class="form-control" id="judul" placeholder="Masukkan judul rapat" required>
@@ -101,73 +124,62 @@
                     <input type="file" class="form-control" id="fileInput">
                 </div>
 
-            <!-- Dropdown Peserta -->
-        <div class="mb-3">
-        <label class="form-label">Peserta Notulen</label>
-        <div class="dropdown w-50">
-            <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-            aria-expanded="false">Pilih Peserta</button>
+                <!-- Dropdown Peserta -->
+                <div class="mb-3">
+                    <label class="form-label">Peserta Notulen</label>
+                    <div class="dropdown w-50">
+                        <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Pilih Peserta</button>
 
-            <div class="dropdown-menu p-2">
-            <input type="text" class="form-control search-box" id="searchInput" placeholder="Cari nama notulen...">
-            <div class="select-all-box">
-                <div class="form-check m-0">
-                <input class="form-check-input" type="checkbox" id="selectAll">
-                <label class="form-check-label fw-semibold" for="selectAll">Pilih Semua</label>
-                </div>
-            </div>
-            <div id="notulenList" class="mt-2">
-            <div class="form-check">
-                <input class="form-check-input notulen-checkbox" type="checkbox" value="Della Reska" id="n1">
-                <label class="form-check-label" for="n1">Della Reska</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Andi Saputra" id="n2">
-                    <label class="form-check-label" for="n2">Andi Saputra</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Budi Santoso" id="n3">
-                    <label class="form-check-label" for="n3">Budi Santoso</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input notulen-checkbox" type="checkbox" value="Citra Ayu" id="n4">
-                    <label class="form-check-label" for="n4">Citra Ayu</label>
-                </div>
-                </div>
-            <button type="button" class="btn btn-save w-100 mt-3" id="addButton">Tambah</button>
-            </div>
-        </div>
+                        <div id="notulenList" class="mt-2">
+                            <?php if (empty($users)): ?>
+                                <div class="text-muted">Belum ada peserta.</div>
+                            <?php else: ?>
+                                <?php foreach ($users as $u): ?>
+                                    <div class="form-check">
+                                        <!-- value = id, data-name = nama agar JS mudah ambil nama -->
+                                        <input class="form-check-input notulen-checkbox" type="checkbox"
+                                            value="<?= htmlspecialchars($u['id']) ?>" id="u<?= $u['id'] ?>"
+                                            data-name="<?= htmlspecialchars($u['nama']) ?>">
+                                        <label class="form-check-label"
+                                            for="u<?= $u['id'] ?>"><?= htmlspecialchars($u['nama']) ?></label>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
 
-        <!-- List peserta -->
-        <div id="addedList" class="added-list mt-3">
-            <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
-            <div id="addedContainer">
-            <p class="text-muted">Belum ada peserta yang ditambahkan</p>
-            </div>
-        </div>
-        </div>
+                    </div>
+
+                    <!-- List peserta -->
+                    <div id="addedList" class="added-list mt-3">
+                        <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
+                        <div id="addedContainer">
+                            <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-save px-4">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // === TINYMCE INITIALIZATION ===
         tinymce.init({
-            selector: '#isi', 
+            selector: '#isi',
             height: 350,
-            menubar: 'edit view insert format tools table help', 
+            menubar: 'edit view insert format tools table help',
             plugins: [
                 "advlist", "anchor", "autolink", "charmap", "code", "fullscreen",
                 "help", "image", "insertdatetime", "link", "lists", "media",
                 "preview", "searchreplace", "table", "visualblocks", "wordcount"
             ],
             toolbar: "undo redo | styles | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-            
+
             setup: function (editor) {
                 editor.on('init', function (e) {
                     if (editor.getContent() === '') {
@@ -182,33 +194,67 @@
             }
         });
 
-        // Simulasi penyimpanan form
-        document.getElementById("notulenForm").addEventListener("submit", function (e) {
+        document.getElementById("notulenForm").addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            const judul = document.getElementById("judul").value;
+            const judul = document.getElementById("judul").value.trim();
             const tanggal = document.getElementById("tanggal").value;
-            const isi = tinymce.get('isi').getContent(); 
+            const isi = tinymce.get('isi').getContent();
 
-            const peserta = [];
-            document.querySelectorAll(".form-check-input:checked").forEach(cb => {
-                peserta.push(cb.value);
+            if (!judul || !tanggal || !isi) {
+                alert('Judul, tanggal, dan isi wajib diisi.');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('judul', judul);
+            fd.append('tanggal', tanggal);
+            fd.append('isi', isi);
+
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput && fileInput.files[0]) {
+                fd.append('file', fileInput.files[0]);
+            }
+
+            // ambil id peserta dari addedContainer
+            const pesertaIds = [];
+            addedContainer.querySelectorAll('.added-item').forEach(div => {
+                const id = div.dataset.id;
+                if (id) pesertaIds.push(id);
             });
 
-            console.log({
-                judul, tanggal, isi, peserta
-            });
+            // tambahkan ke formdata sebagai peserta[]
+            pesertaIds.forEach(id => fd.append('peserta[]', id));
 
-            const alertBox = document.getElementById("alertBox");
-            alertBox.style.display = "block"; // Tampilkan alert
-
-            // Reset form dan editor setelah simpan
-            setTimeout(() => {
-                alertBox.style.display = "none";
-                document.getElementById("notulenForm").reset();
-                tinymce.get('isi').setContent(''); 
-            }, 2000);
+            // send to server
+            try {
+                const res = await fetch('../proses/proses_simpan_notulen.php', {
+                    method: 'POST',
+                    body: fd,
+                    credentials: 'same-origin'
+                });
+                const json = await res.json();
+                if (json.success) {
+                    // sukses UI
+                    const alertBox = document.getElementById("alertBox");
+                    alertBox.style.display = 'block';
+                    alertBox.textContent = json.message || 'Notulen tersimpan';
+                    setTimeout(() => {
+                        alertBox.style.display = 'none';
+                        document.getElementById("notulenForm").reset();
+                        tinymce.get('isi').setContent('');
+                        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
+                    }, 1500);
+                } else {
+                    alert(json.message || 'Gagal menyimpan notulen.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat menyimpan.');
+            }
         });
+
+
 
         // Logout Desktop
         document.getElementById("logoutBtn").addEventListener("click", function () {
@@ -229,56 +275,77 @@
             });
         }
         // ===================
-    // Fungsi Dropdown Peserta
-    // ===================
-    const searchInput = document.getElementById('searchInput');
-    const notulenItems = document.querySelectorAll('#notulenList .form-check');
-    const selectAll = document.getElementById('selectAll');
-    const addButton = document.getElementById('addButton');
-    const addedContainer = document.getElementById('addedContainer');
+        // Fungsi Dropdown Peserta
+        // ===================
+        const searchInput = document.getElementById('searchInput');
+        const notulenItems = document.querySelectorAll('#notulenList .form-check');
+        const selectAll = document.getElementById('selectAll');
+        const addButton = document.getElementById('addButton');
+        const addedContainer = document.getElementById('addedContainer');
 
-    // Search
-    searchInput.addEventListener('keyup', () => {
-        const filter = searchInput.value.toLowerCase();
-        notulenItems.forEach(item => {
-        const text = item.innerText.toLowerCase();
-        item.style.display = text.includes(filter) ? '' : 'none';
+        // Search
+        searchInput.addEventListener('keyup', () => {
+            const filter = searchInput.value.toLowerCase();
+            notulenItems.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(filter) ? '' : 'none';
+            });
         });
-    });
 
-    // Select all
-    selectAll.addEventListener('change', function () {
-        const allCheckboxes = document.querySelectorAll('.notulen-checkbox');
-        allCheckboxes.forEach(cb => cb.checked = this.checked);
-    });
+        // Select all
+        selectAll.addEventListener('change', function () {
+            const allCheckboxes = document.querySelectorAll('.notulen-checkbox');
+            allCheckboxes.forEach(cb => cb.checked = this.checked);
+        });
 
-    // Tambah peserta
-    addButton.addEventListener('click', function () {
-        const selected = document.querySelectorAll('.notulen-checkbox:checked');
-      addedContainer.innerHTML = ''; // Kosongkan dulu
+        // Tambah peserta
+        addButton.addEventListener('click', function () {
+            const selected = document.querySelectorAll('.notulen-checkbox:checked');
+            addedContainer.innerHTML = ''; // Kosongkan dulu
 
-        if (selected.length === 0) {
-        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-        return;
+            if (selected.length === 0) {
+                addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
+                return;
+            }
+
+            selected.forEach(cb => {
+                const id = cb.value;
+                const name = cb.dataset.name || cb.nextElementSibling?.textContent?.trim() || 'Unknown';
+                // Cek jika id sudah ada di addedContainer untuk mencegah duplikat
+                if (addedContainer.querySelector(`.added-item[data-id="${id}"]`)) return;
+
+                const div = document.createElement('div');
+                div.className = 'added-item d-flex align-items-center gap-2 mb-2';
+                div.dataset.id = id;
+                // tampilkan nama dan tombol hapus
+                div.innerHTML = `
+            <span class="flex-grow-1">${escapeHtml(name)}</span>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-btn">Hapus</button>
+        `;
+                addedContainer.appendChild(div);
+            });
+
+            // Tombol hapus (event delegation lebih baik, tapi ini cepat)
+            addedContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.removeEventListener('click', removeHandler); // hindari double attach
+                btn.addEventListener('click', removeHandler);
+            });
+        });
+
+        function removeHandler() {
+            const parent = this.parentElement;
+            if (!parent) return;
+            // uncheck checkbox terkait
+            const id = parent.dataset.id;
+            const cb = document.querySelector(`.notulen-checkbox[value="${id}"]`);
+            if (cb) cb.checked = false;
+            parent.remove();
+            if (addedContainer.children.length === 0) {
+                addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
+            }
         }
 
-        selected.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'added-item';
-        div.innerHTML = `${item.value} <button class="btn btn-sm btn-danger remove-btn">x</button>`;
-        addedContainer.appendChild(div);
-        });
-
-      // Tombol hapus
-        document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            this.parentElement.remove();
-            if (addedContainer.children.length === 0) {
-            addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-            }
-        });
-        });
-    });
     </script>
 </body>
+
 </html>
