@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 19, 2025 at 04:35 AM
+-- Generation Time: Nov 19, 2025 at 06:43 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -28,11 +28,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `tambah_notulen` (
-  `judul_raoat` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `id` int NOT NULL,
+  `judul_rapat` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `tanggal_rapat` date NOT NULL,
   `isi_rapat` text COLLATE utf8mb4_general_ci NOT NULL,
   `Lampiran` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `peserta` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+  `peserta` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `created_by` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -70,13 +73,20 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `foto`, `nama`, `email`, `nik`, `password`, `role`, `created_at`) VALUES
-(1, 'user.jpg', 'admin', 'admin@gmail.com', 123456, '$2y$10$hOd/rJAASQBcZdrzURsCZODO4XvM7jXq61E2RT3VX9EIj73kjvJl2', 'admin', '2025-11-17 08:23:59'),
+(1, '1763529296_foto profile.jpg', 'Febry', 'admin@gmail.com', 123456, '$2y$10$hOd/rJAASQBcZdrzURsCZODO4XvM7jXq61E2RT3VX9EIj73kjvJl2', 'admin', '2025-11-17 08:23:59'),
 (15, 'user.jpg', 'yohana', 'yohana@gmail.com', 213456, '$2y$10$SoNQ7cQX1MdohIjWs3f6nOZPGja9Ew7bixQ6HhvNC/bgRqHDUSbC6', 'peserta', '2025-11-17 08:27:36'),
-(17, 'user.jpg', 'rian', 'rian@gmail.com', 908765, '$2y$10$XV5rqbg2wbZtx4empI3PQ..DzPCjdN264396USI320l4lAPuNh8h.', 'peserta', '2025-11-19 04:17:50');
+(17, 'user.jpg', 'rian', 'rian@gmail.com', 908765, '$2y$10$XV5rqbg2wbZtx4empI3PQ..DzPCjdN264396USI320l4lAPuNh8h.', 'peserta', '2025-11-19 04:17:50'),
+(18, 'user.jpg', 'febry', 'febry@gmail.com', 909087, '$2y$10$4R1.xDv9X/W8miVIMcWijepSDoOnux0ki5h.sct3L8fAgDnoOkLoq', 'peserta', '2025-11-19 04:54:01');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `tambah_notulen`
+--
+ALTER TABLE `tambah_notulen`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `users`
@@ -90,10 +100,16 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `tambah_notulen`
+--
+ALTER TABLE `tambah_notulen`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
