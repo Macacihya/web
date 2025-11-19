@@ -124,40 +124,64 @@ if ($q) {
                     <input type="file" class="form-control" id="fileInput">
                 </div>
 
-                <!-- Dropdown Peserta -->
-                <div class="mb-3">
-                    <label class="form-label">Peserta Notulen</label>
-                    <div class="dropdown w-50">
-                        <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">Pilih Peserta</button>
+                <!-- Dropdown Peserta (Advanced select with search) -->
+<div class="mb-3">
+    <label class="form-label">Peserta Notulen</label>
 
-                        <div id="notulenList" class="mt-2">
-                            <?php if (empty($users)): ?>
-                                <div class="text-muted">Belum ada peserta.</div>
-                            <?php else: ?>
-                                <?php foreach ($users as $u): ?>
-                                    <div class="form-check">
-                                        <!-- value = id, data-name = nama agar JS mudah ambil nama -->
-                                        <input class="form-check-input notulen-checkbox" type="checkbox"
-                                            value="<?= htmlspecialchars($u['id']) ?>" id="u<?= $u['id'] ?>"
-                                            data-name="<?= htmlspecialchars($u['nama']) ?>">
-                                        <label class="form-check-label"
-                                            for="u<?= $u['id'] ?>"><?= htmlspecialchars($u['nama']) ?></label>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+    <!-- Trigger button -->
+    <div class="dropdown w-50">
+        <button id="dropdownToggle" class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Pilih Peserta</button>
+
+        <div class="dropdown-menu p-3 w-100" style="max-height: 360px; overflow:auto;">
+            <!-- Search -->
+            <div class="mb-2">
+                <input id="searchInput" type="search" class="form-control" placeholder="Cari peserta..." />
+            </div>
+
+            <!-- Select all -->
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label" for="selectAll">Pilih Semua</label>
+            </div>
+
+            <hr />
+
+            <!-- List of checkboxes (same markup as sebelumya) -->
+            <div id="notulenList">
+                <?php if (empty($users)): ?>
+                    <div class="text-muted">Belum ada peserta.</div>
+                <?php else: ?>
+                    <?php foreach ($users as $u): ?>
+                        <div class="form-check notulen-item py-1">
+                            <input class="form-check-input notulen-checkbox" type="checkbox"
+                                value="<?= htmlspecialchars($u['id']) ?>" id="u<?= $u['id'] ?>"
+                                data-name="<?= htmlspecialchars($u['nama']) ?>">
+                            <label class="form-check-label" for="u<?= $u['id'] ?>"><?= htmlspecialchars($u['nama']) ?></label>
                         </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
 
-                    </div>
+            <hr />
 
-                    <!-- List peserta -->
-                    <div id="addedList" class="added-list mt-3">
-                        <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
-                        <div id="addedContainer">
-                            <p class="text-muted">Belum ada peserta yang ditambahkan</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Actions -->
+            <div class="d-flex justify-content-between">
+                <button id="clearSearchBtn" type="button" class="btn btn-sm btn-light">Reset</button>
+                <button id="addButton" type="button" class="btn btn-sm btn-success">Tambah</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- List peserta (target) -->
+    <div id="addedList" class="added-list mt-3">
+        <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
+        <div id="addedContainer">
+            <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+        </div>
+    </div>
+</div>
+
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-save px-4">Simpan</button>
                 </div>

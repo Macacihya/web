@@ -172,7 +172,7 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
                 const photoPath = u.foto ? `../file/${u.foto}` : '../file/user.jpg';
 
                 const row = `
-            <tr>
+                <tr>
                 <td>${start + index + 1}</td>
                 <td><img src="${photoPath}" alt="${u.nama || ''}" class="user-photo" style="width:48px;height:48px;object-fit:cover;border-radius:4px;"></td>
                 <td>${u.nama || ''}</td>
@@ -184,8 +184,8 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
-            </tr>
-            `;
+            </tr >
+                    `;
                 tbody.insertAdjacentHTML("beforeend", row);
             });
 
@@ -199,29 +199,29 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
 
             const start = data.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
             const end = Math.min(start + itemsPerPage - 1, data.length);
-            dataInfo.textContent = data.length === 0 ? '' : `Menampilkan ${start}-${end} dari ${data.length} pengguna`;
+            dataInfo.textContent = data.length === 0 ? '' : `Menampilkan ${start} -${end} dari ${data.length} pengguna`;
 
             pagination.insertAdjacentHTML(
                 "beforeend",
-                `<li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage - 1});return false;">Previous</a>
-            </li>`
+                `<li class="page-item ${currentPage === 1 ? "disabled" : ""}" >
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1});return false;">Previous</a>
+            </li> `
             );
 
             for (let i = 1; i <= totalPages; i++) {
                 const active = i === currentPage ? "active" : "";
                 pagination.insertAdjacentHTML(
                     "beforeend",
-                    `<li class="page-item ${active}">
+                    `<li class="page-item ${active}" >
                     <a class="page-link" href="#" onclick="changePage(${i});return false;">${i}</a>
-                </li>`
+                </li> `
                 );
             }
 
             pagination.insertAdjacentHTML(
                 "beforeend",
-                `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${currentPage + 1});return false;">Next</a>
+                `<li class="page-item ${currentPage === totalPages ? "disabled" : ""}" >
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1});return false;">Next</a>
             </li>`
             );
         }
@@ -286,10 +286,10 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
         // Fungsi showAlert
         function showAlert(message, type = 'success') {
             alertBox.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
+                    < div class="alert alert-${type} alert-dismissible fade show" role = "alert" >
+                        ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            </div >
         `;
             setTimeout(() => {
                 const alertElement = alertBox.querySelector('.alert');

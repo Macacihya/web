@@ -1,6 +1,32 @@
+<?php
+session_start();
+require_once __DIR__ . '/../koneksi.php';
+
+// Cek Login & Role
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'peserta') {
+    header("Location: ../login.php");
+    exit;
+}
+
+// Ambil semua notulen dari database
+$user_id = $_SESSION['user_id'];
+
+// Query untuk mengambil semua notulen (untuk sementara tidak filter, agar kita bisa debug)
+$sql = "SELECT id, judul_rapat, tanggal_rapat, created_by, Lampiran, peserta 
+        FROM tambah_notulen 
+        ORDER BY tanggal_rapat DESC";
+
+$result = $conn->query($sql);
+
+$notulens = [];
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $notulens[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +40,6 @@
             background-color: #faf8f5;
             font-family: "Poppins", sans-serif;
         }
-
 
         .sidebar-content {
             min-width: 250px;
@@ -87,44 +112,53 @@
         .btn-view {
             color: #0d6efd;
         }
+
         td a.text-success i.bi-download {
-            color: #198754 !important; 
+            color: #198754 !important;
         }
+
         .search-table {
             width: 250px;
         }
+
         .table-responsive table {
             table-layout: fixed;
         }
-        .table th:nth-child(1), /*Kolom No*/
+
+        .table th:nth-child(1),
         .table td:nth-child(1) {
-            width: 5%; 
+            width: 5%;
             min-width: 50px;
         }
-        .table th:nth-child(2), /*Kolom Judul Rapat*/
+
+        .table th:nth-child(2),
         .table td:nth-child(2) {
             width: 40%;
-            min-width: 180px; 
+            min-width: 180px;
         }
-        .table th:nth-child(3), /* Kolom Tanggal */
+
+        .table th:nth-child(3),
         .table td:nth-child(3) {
-            width: 20%; 
-            min-width: 100px; 
+            width: 20%;
+            min-width: 100px;
             white-space: nowrap;
         }
-        .table th:nth-child(4), /* Kolom Pembuat */
+
+        .table th:nth-child(4),
         .table td:nth-child(4) {
             width: 20%;
-            min-width: 100px; 
+            min-width: 100px;
         }
-        .table th:nth-child(5), /* Kolom Aksi */
+
+        .table th:nth-child(5),
         .table td:nth-child(5) {
-            width: 15%; 
-            min-width: 100px; 
+            width: 15%;
+            min-width: 100px;
         }
+
         .table-responsive .text-center a[title="Download"] i {
-            color: #198754 !important; 
-        }   
+            color: #198754 !important;
+        }
     </style>
 </head>
 
@@ -143,10 +177,12 @@
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
                         <li>
-                            <a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard_peserta.php"><i
+                                    class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
                         <li>
-                            <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                            <a class="nav-link" href="profile_peserta.php"><i
+                                    class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                     </ul>
                 </div>
@@ -182,34 +218,30 @@
 
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div><h4><b>Dashboard Peserta</b></h4></div>
+            <div>
+                <h4><b>Dashboard Peserta</b></h4>
+            </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="fw-medium">Halo, Peserta 👋</span>
+                <span class="fw-medium">Halo, <?= htmlspecialchars($_SESSION['user_name'] ?? 'Peserta') ?> 👋</span>
             </div>
         </div>
 
+        <!-- Highlight Cards -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">31/12/2025</span>
-                    <h6 class="mt-1 mb-1">Rapat Akhir Tahun</h6>
-                    <p>Tinjauan kinerja dan pencapaian target sepanjang tahun serta proyeksi strategi tahun mendatang</p>
+            <?php
+            // Ambil 3 notulen terbaru untuk highlight
+            $top3 = array_slice($notulens, 0, 3);
+            foreach ($top3 as $highlight):
+                ?>
+                <div class="col-md-4">
+                    <div class="highlight-card h-100">
+                        <span class="text-muted"><?= date('d/m/Y', strtotime($highlight['tanggal_rapat'])) ?></span>
+                        <h6 class="mt-1 mb-1"><?= htmlspecialchars($highlight['judul_rapat']) ?></h6>
+                        <p class="text-truncate">Dibuat oleh: <?= htmlspecialchars($highlight['created_by'] ?? 'Admin') ?>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">30/12/2025</span>
-                    <h6 class="mt-1 mb-1">Evaluasi Kinerja</h6>
-                    <p>Pembahasan hasil kerja individual dan tim. Fokus pada peningkatan dan umpan balik konstruktif</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">29/12/2025</span>
-                    <h6 class="mt-1 mb-1">Rapat Tim Proyek</h6>
-                    <p>Koordinasi terakhir untuk memastikan semua tugas proyek selesai dan siap untuk pelaporan akhir</p>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <div class="table-wrapper">
@@ -268,124 +300,49 @@
             const dataInfo = document.getElementById("dataInfo");
             const rowsPerPageSelect = document.getElementById("rowsPerPage");
 
-            // =============================
-            // Data simulasi (TETAP)
-            // =============================
-            const notulenData = [{
-                    judul: "Rapat Akhir Tahun",
-                    tanggal: "31/12/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Evaluasi Kinerja",
-                    tanggal: "30/12/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Rapat Tim Proyek",
-                    tanggal: "29/09/2025",
-                    pembuat: "Sinta"
-                },
-                {
-                    judul: "Rapat Divisi",
-                    tanggal: "20/11/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Meeting Harian",
-                    tanggal: "12/11/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Koordinasi Bulanan",
-                    tanggal: "02/11/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Evaluasi Anggaran",
-                    tanggal: "25/10/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Kick Off Proyek Baru",
-                    tanggal: "15/10/2025",
-                    pembuat: "Sinta"
-                },
-                {
-                    judul: "Laporan Triwulan",
-                    tanggal: "28/09/2025",
-                    pembuat: "Rian"
-                },
-                {
-                    judul: "Briefing Pagi",
-                    tanggal: "07/09/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Rapat Koordinasi HR",
-                    tanggal: "20/08/2025",
-                    pembuat: "Didit"
-                },
-                {
-                    judul: "Presentasi Hasil Survei",
-                    tanggal: "13/08/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Rapat Pengembangan Produk Baru",
-                    tanggal: "20/07/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Finalisasi Strategi",
-                    tanggal: "29/06/2025",
-                    pembuat: "Admin"
-                },
-                {
-                    judul: "Laporan Keuangan dan Proyeksi",
-                    tanggal: "12/05/2025",
-                    pembuat: "Hana"
-                },
-                {
-                    judul: "Tinjauan Keamanan Data",
-                    tanggal: "09/04/2025",
-                    pembuat: "Hana"
-                },
-            ];
+            // Data dari PHP
+            const notulenData = <?= json_encode($notulens) ?>;
 
             let currentPage = 1;
             let rowsPerPage = 10;
 
-            // =============================
-            // FUNGSI renderTable (DIPASTIKAN MENGGUNAKAN btn-success)
-            // =============================
             function renderTable(data, startIndex = 0) {
                 tableBody.innerHTML = "";
+                if (data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data notulen.</td></tr>`;
+                    return;
+                }
+
                 data.forEach((item, index) => {
-                    // MENGHITUNG NOMOR URUT BERKELANJUTAN
                     const nomorUrut = startIndex + index + 1;
-                    
+                    const tanggal = new Date(item.tanggal_rapat).toLocaleDateString('id-ID');
+                    const pembuat = item.created_by || 'Admin';
+
+                    let downloadBtn = '';
+                    if (item.Lampiran) {
+                        downloadBtn = `<a href="../file/${item.Lampiran}" class="text-success" title="Download" download> <i class="bi bi-download"></i></a>`;
+                    } else {
+                        downloadBtn = `<span class="text-muted" title="Tidak ada lampiran"><i class="bi bi-download"></i></span>`;
+                    }
+
                     const row = `
                 <tr>
                   <td>${nomorUrut}</td>
-                  <td>${item.judul}</td>
-                  <td>${item.tanggal}</td>
-                  <td>${item.pembuat}</td>
+                  <td>${item.judul_rapat}</td>
+                  <td>${tanggal}</td>
+                  <td>${pembuat}</td>
                   <td class="text-center"> 
-                    <a href="detail_rapat_peserta.php?id=${nomorUrut - 1}" class="text-primary me-2 px-2" title="Lihat"><i class="bi bi-eye"></i></a>
-                    <a href="../file/notulen_rapat.pdf" class="text-success" title="Download" download> <i class="bi bi-download"></i></a>
-                    
-                    </td>
+                    <a href="detail_rapat_peserta.php?id=${item.id}" class="text-primary me-2 px-2" title="Lihat"><i class="bi bi-eye"></i></a>
+                    ${downloadBtn}
+                  </td>
                 </tr>
               `;
                     tableBody.insertAdjacentHTML("beforeend", row);
                 });
             }
 
-            // =============================
-            // Isi filter pembuat (TETAP)
-            // =============================
-            const pembuatUnik = [...new Set(notulenData.map((d) => d.pembuat))];
+            // Isi filter pembuat
+            const pembuatUnik = [...new Set(notulenData.map((d) => d.created_by || 'Admin'))];
             pembuatUnik.forEach((nama) => {
                 const opt = document.createElement("option");
                 opt.value = nama;
@@ -393,21 +350,22 @@
                 filterPembuat.appendChild(opt);
             });
 
-            // =============================
-            // Filtering, Pagination, Rendering
-            // =============================
             function getFilteredData() {
                 const keyword = searchInput.value.toLowerCase();
                 const selectedPembuat = filterPembuat.value;
 
                 return notulenData.filter((item) => {
+                    const judul = (item.judul_rapat || '').toLowerCase();
+                    const tanggal = (item.tanggal_rapat || '').toLowerCase();
+                    const pembuat = (item.created_by || 'Admin').toLowerCase();
+
                     const cocokKeyword =
-                        item.judul.toLowerCase().includes(keyword) ||
-                        item.tanggal.toLowerCase().includes(keyword) ||
-                        item.pembuat.toLowerCase().includes(keyword);
+                        judul.includes(keyword) ||
+                        tanggal.includes(keyword) ||
+                        pembuat.includes(keyword);
 
                     const cocokPembuat =
-                        selectedPembuat === "" || item.pembuat === selectedPembuat;
+                        selectedPembuat === "" || (item.created_by || 'Admin') === selectedPembuat;
 
                     return cocokKeyword && cocokPembuat;
                 });
@@ -415,7 +373,6 @@
 
             function paginate(data) {
                 if (rowsPerPage === "all") return data;
-
                 const start = (currentPage - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
                 return data.slice(start, end);
@@ -440,32 +397,20 @@
                 }
             }
 
-            // =============================
-            // FUNGSI updateTable 
-            // =============================
             function updateTable() {
                 const filteredData = getFilteredData();
                 const totalRows = filteredData.length;
-
-                // HITUNG NOMOR URUT AWAL
                 const startIndex = (rowsPerPage === "all" || totalRows === 0) ? 0 : (currentPage - 1) * rowsPerPage;
-
                 const paginatedData = paginate(filteredData);
 
-                // MEMANGGIL renderTable dengan startIndex
                 renderTable(paginatedData, startIndex);
                 renderPagination(totalRows);
 
-                // Update info data (Menampilkan X-Y dari Z data)
                 const start = totalRows === 0 ? 0 : startIndex + 1;
                 const end = start + paginatedData.length - 1;
-
                 dataInfo.textContent = `Menampilkan ${start}-${end} dari ${totalRows} data`;
             }
 
-            // =============================
-            // Event listeners (TETAP)
-            // =============================
             searchInput.addEventListener("input", () => {
                 currentPage = 1;
                 updateTable();
@@ -475,56 +420,25 @@
                 updateTable();
             });
             rowsPerPageSelect.addEventListener("change", () => {
-                rowsPerPage =
-                    rowsPerPageSelect.value === "all" ?
-                    "all" :
-                    parseInt(rowsPerPageSelect.value);
+                rowsPerPage = rowsPerPageSelect.value === "all" ? "all" : parseInt(rowsPerPageSelect.value);
                 currentPage = 1;
                 updateTable();
             });
 
-            // =============================
-            // Hapus data (TETAP)
-            // =============================
-            document.addEventListener("click", function (e) {
-                const btn = e.target.closest(".btn-delete");
-                if (!btn) return;
-                
-                // Dapatkan index global dari data-index 
-                const globalIndex = parseInt(btn.dataset.index); 
-                
-                if (confirm("Yakin mau hapus data ini?")) {
-                    notulenData.splice(globalIndex, 1);
-                    updateTable();
+            // Logout function
+            function confirmLogout() {
+                if (confirm("Apakah kamu yakin ingin logout?")) {
+                    window.location.href = "../proses/proses_logout.php";
                 }
-            });
-
-            // =============================
-            // Tombol logout (TETAP)
-            // =============================
-            document.getElementById("logoutBtn").addEventListener("click", function () {
-                const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
-                if (confirmLogout) {
-                    // Menggunakan kunci 'adminData' yang sudah disepakati konsisten
-                    localStorage.removeItem("adminData"); 
-                    window.location.href = "../login.php";
-                }
-            });
-            // logout mobile
-            const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-            if (logoutBtnMobile) {
-                logoutBtnMobile.addEventListener("click", function () {
-                    const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
-                    if (konfirmasiLogout) {
-                        localStorage.removeItem("adminData");
-                        window.location.href = "../login.php";
-                    }
-                });
             }
 
-            // =============================
-            // Render awal (TETAP)
-            // =============================
+            document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
+
+            const logoutBtnMobile = document.getElementById("logoutBtnMobile");
+            if (logoutBtnMobile) {
+                logoutBtnMobile.addEventListener("click", confirmLogout);
+            }
+
             updateTable();
         });
     </script>

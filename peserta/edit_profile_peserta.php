@@ -1,3 +1,31 @@
+<?php
+session_start();
+require_once __DIR__ . '/../koneksi.php';
+
+// Cek Login
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'peserta') {
+    header("Location: ../login.php");
+    exit;
+}
+
+$id_user = $_SESSION['user_id'];
+
+// Ambil data terbaru dari database
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_user);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+if (!$user) {
+    session_destroy();
+    header("Location: ../login.php");
+    exit;
+}
+
+$foto_profile = !empty($user['foto']) ? '../file/' . $user['foto'] : '../file/user.jpg';
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -117,7 +145,7 @@
                     <ul class="nav flex-column">
                         <li><a class="nav-link" href="dashboard_peserta.php"><i
                                     class="bi bi-grid me-2"></i>Dashboard</a></li>
-                        <li><a class="nav-link" href="profile_peserta.php"><i
+                        <li><a class="nav-link active" href="profile_peserta.php"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a></li>
                     </ul>
                 </div>
@@ -139,7 +167,8 @@
             <h5 class="fw-bold mb-4 ms-3">Menu</h5>
             <ul class="nav flex-column">
                 <li><a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-                <li><a class="nav-link active" href="profile_peserta.php"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="nav-link active" href="profile_peserta.php"><i class="bi bi-person me-2"></i>Profile</a>
+                </li>
             </ul>
         </div>
 
@@ -153,23 +182,33 @@
     <!-- Main -->
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="search-box w-50">
-                <input type="text" class="form-control" placeholder="Search...">
+            <div class="w-50">
+                <!-- Alert Error -->
+                <?php if (isset($_SESSION['error_message'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['error_message']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['error_message']); ?>
+                <?php endif; ?>
             </div>
             <div class="profile">
-                <span>Halo, Peserta 👋</span>
+                <span>Halo, <?= htmlspecialchars($user['nama']); ?> 👋</span>
+                <img src="<?= htmlspecialchars($foto_profile); ?>" alt="Profile" class="rounded-circle"
+                    style="width: 40px; height: 40px; object-fit: cover;">
             </div>
         </div>
 
         <div class="profile-box">
             <h5 class="fw-semibold mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Profil Pengguna</h5>
 
-            <form>
+            <form action="../proses/proses_edit_profile.php" method="POST" enctype="multipart/form-data">
                 <div class="text-center mb-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" width="100" height="100"
-                        class="rounded-circle mb-2" alt="Foto Profil">
+                    <img src="<?= htmlspecialchars($foto_profile); ?>" width="100" height="100"
+                        class="rounded-circle mb-2" style="object-fit: cover; border: 2px solid #ddd;"
+                        alt="Foto Profil">
                     <div>
-                        <input type="file" class="form-control w-auto mx-auto" accept=".jpg,.png,.gif">
+                        <input type="file" name="foto" class="form-control w-auto mx-auto" accept=".jpg,.png,.jpeg">
                         <small class="text-muted d-block mt-1">Kosongkan jika tidak ingin mengubah foto (Maks.
                             2MB)</small>
                     </div>
@@ -177,12 +216,13 @@
 
                 <div class="mb-3">
                     <label class="form-label">Nama</label>
-                    <input id="nama" type="text" class="form-control">
+                    <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($user['nama']); ?>"
+                        required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input id="email" type="email" class="form-control" disabled>
+                    <input type="email" class="form-control" value="<?= htmlspecialchars($user['email']); ?>" disabled>
                     <small class="text-muted">Email tidak dapat diubah</small>
                 </div>
 
@@ -191,99 +231,41 @@
                 <h6 class="fw-semibold mb-3">Ubah Password (Opsional)</h6>
 
                 <div class="mb-3">
-                    <label class="form-label">Password Saat Ini</label>
-                    <input type="password" class="form-control"
-                        placeholder="Masukkan password saat ini jika ingin ganti">
-                </div>
-
-                <div class="mb-3">
                     <label class="form-label">Password Baru</label>
-                    <input type="password" class="form-control" placeholder="Kosongkan jika tidak ganti password">
+                    <input type="password" name="password_baru" class="form-control"
+                        placeholder="Kosongkan jika tidak ganti password">
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label">Konfirmasi Password Baru</label>
-                    <input type="password" class="form-control" placeholder="Ulangi password baru">
+                    <input type="password" name="password_konfirmasi" class="form-control"
+                        placeholder="Ulangi password baru">
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
                     <a href="profile_peserta.php" class="btn btn-cancel">Batal</a>
-                    <button id="simpan_perubahan" type="submit" class="btn btn-save"><i
-                            class="bi bi-check2-circle me-1"></i>Simpan
-                        Perubahan Profil</button>
+                    <button type="submit" class="btn btn-save"><i class="bi bi-check2-circle me-1"></i>Simpan
+                        Perubahan</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const inputNama = document.getElementById("nama");
-            const inputEmail = document.getElementById("email");
-            const form = document.querySelector("form");
-            const pesertaData = JSON.parse(localStorage.getItem("pesertaData"));
-
-            // Pastikan data peserta ditemukan
-            if (pesertaData && pesertaData.name && pesertaData.email) {
-                inputNama.value = pesertaData.name;
-                inputEmail.value = pesertaData.email;
-            } else {
-                alert("Data peserta tidak ditemukan. Silakan login kembali.");
-                window.location.href = "../login.php";
-                return;
+        // Logout function
+        function confirmLogout() {
+            if (confirm("Apakah kamu yakin ingin logout?")) {
+                window.location.href = "../proses/proses_logout.php";
             }
+        }
 
-            // === Form Submit ===
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
+        document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
 
-                const konfirmasi = confirm("Yakin ingin menyimpan?");
-                if (!konfirmasi) return;
-
-                const namaBaru = inputNama.value.trim();
-                if (namaBaru === "") {
-                    alert("Nama tidak boleh kosong!");
-                    return;
-                }
-
-                // Update nama di localStorage peserta
-                pesertaData.name = namaBaru;
-                localStorage.setItem("pesertaData", JSON.stringify(pesertaData));
-
-                // Sinkronkan juga ke userData (jika email sama)
-                const userData = JSON.parse(localStorage.getItem("userData"));
-                if (userData && userData.email === pesertaData.email) {
-                    userData.name = namaBaru;
-                    localStorage.setItem("userData", JSON.stringify(userData));
-                }
-
-                alert("Profil berhasil diperbarui!");
-                window.location.href = "profile_peserta.php";
-            });
-
-            // === Logout Desktop ===
-            document.getElementById("logoutBtn").addEventListener("click", function () {
-                const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
-                if (confirmLogout) {
-                    localStorage.removeItem("pesertaData");
-                    window.location.href = "../login.php";
-                }
-            });
-
-            // === Logout Mobile ===
-            const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-            if (logoutBtnMobile) {
-                logoutBtnMobile.addEventListener("click", function () {
-                    const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
-                    if (konfirmasiLogout) {
-                        localStorage.removeItem("pesertaData");
-                        window.location.href = "../login.php";
-                    }
-                });
-            }
-        });
+        const logoutBtnMobile = document.getElementById("logoutBtnMobile");
+        if (logoutBtnMobile) {
+            logoutBtnMobile.addEventListener("click", confirmLogout);
+        }
     </script>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

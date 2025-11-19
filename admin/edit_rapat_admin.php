@@ -1,142 +1,188 @@
+<?php
+session_start();
+require_once __DIR__ . '/../koneksi.php';
+
+// Cek Login & Role
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+  header("Location: ../login.php");
+  exit;
+}
+
+$id_notulen = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id_notulen <= 0) {
+  echo "<script>alert('ID Notulen tidak valid!'); window.location.href='dashboard_admin.php';</script>";
+  exit;
+}
+
+// Ambil data notulen
+$sql = "SELECT * FROM tambah_notulen WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_notulen);
+$stmt->execute();
+$result = $stmt->get_result();
+$notulen = $result->fetch_assoc();
+
+if (!$notulen) {
+  echo "<script>alert('Data notulen tidak ditemukan!'); window.location.href='dashboard_admin.php';</script>";
+  exit;
+}
+
+// Ambil daftar semua user untuk dropdown peserta
+$sql_users = "SELECT nama FROM users ORDER BY nama ASC";
+$res_users = $conn->query($sql_users);
+$all_users = [];
+while ($row = $res_users->fetch_assoc()) {
+  $all_users[] = $row['nama'];
+}
+
+// Parse peserta yang sudah ada di notulen
+$current_participants = array_map('trim', explode(',', $notulen['peserta']));
+?>
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Edit Rapat - Admin</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Rapat - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <script src="https://cdn.tiny.cloud/1/cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-<style>
+  <script src="https://cdn.tiny.cloud/1/cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
+  <style>
     body {
-    background-color: #faf8f5;
-    font-family: "Poppins", sans-serif;
+      background-color: #faf8f5;
+      font-family: "Poppins", sans-serif;
     }
 
     .sidebar-content {
-    min-width: 250px;
-    background: #fff;
-    height: 100%;
-    border-right: 1px solid #eee;
-    padding: 1.5rem 1rem;
+      min-width: 250px;
+      background: #fff;
+      height: 100%;
+      border-right: 1px solid #eee;
+      padding: 1.5rem 1rem;
     }
 
     .sidebar-content .nav-link {
-    color: #555;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
+      color: #555;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
     }
 
     .sidebar-content .nav-link.active,
     .sidebar-content .nav-link:hover {
-    background-color: #00b050;
-    color: #fff;
+      background-color: #00b050;
+      color: #fff;
     }
 
     .logout-btn {
-    border: 1px solid #f8d7da;
-    color: #dc3545;
-    border-radius: 0.5rem;
+      border: 1px solid #f8d7da;
+      color: #dc3545;
+      border-radius: 0.5rem;
     }
 
     .main-content {
-    margin-left: 260px;
-    padding: 1.5rem;
+      margin-left: 260px;
+      padding: 1.5rem;
     }
 
     @media (max-width: 991.98px) {
-    .main-content {
+      .main-content {
         margin-left: 0;
-    }
+      }
     }
 
     .form-wrapper {
-    background: #fff;
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     }
+
     .btn-save {
-        background-color: #00b050;
-        color: #fff;
-        border: none;
+      background-color: #00b050;
+      color: #fff;
+      border: none;
     }
 
     .btn-save:hover {
-        background-color: #009443;
-        color: #fff;
+      background-color: #009443;
+      color: #fff;
     }
+
     .btn-save.dropdown-toggle:focus,
     .btn-save.dropdown-toggle:active:focus,
     .btn-save.dropdown-toggle:hover:focus,
     .btn-save.dropdown-toggle:active {
-        background-color: #00b050 !important; 
-        color: #fff !important; 
-        border-color: #00b050 !important; 
-        box-shadow: none !important; 
+      background-color: #00b050 !important;
+      color: #fff !important;
+      border-color: #00b050 !important;
+      box-shadow: none !important;
     }
+
     .dropdown.show .btn-save.dropdown-toggle {
-        background-color: #00b050 !important;
-        color: #fff !important;
-        border-color: #00b050 !important;
+      background-color: #00b050 !important;
+      color: #fff !important;
+      border-color: #00b050 !important;
     }
-    
+
     .btn-back {
-    background-color: #f8f9fa;
-    border: 1px solid #ccc;
-    border-radius: .5rem;
-    font-weight: 500;
+      background-color: #f8f9fa;
+      border: 1px solid #ccc;
+      border-radius: .5rem;
+      font-weight: 500;
     }
 
     .btn-back:hover {
-    background-color: #e9ecef;
+      background-color: #e9ecef;
     }
 
     input[type="file"] {
-    border: 1px solid #dee2e6;
-    border-radius: 0.375rem;
-    padding: 0.4rem;
-    width: 100%;
+      border: 1px solid #dee2e6;
+      border-radius: 0.375rem;
+      padding: 0.4rem;
+      width: 100%;
     }
 
     .form-check-label {
-    margin-left: 4px;
-    font-size: 15px;
-    cursor: pointer;
+      margin-left: 4px;
+      font-size: 15px;
+      cursor: pointer;
     }
 
     .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
     }
 
     .form-label {
-    font-weight: 500;
+      font-weight: 500;
     }
 
     .dropdown-menu {
-    width: 100%;
-    max-height: 250px;
-    overflow-y: auto;
+      width: 100%;
+      max-height: 250px;
+      overflow-y: auto;
     }
 
     .search-box {
-    padding: 8px;
+      padding: 8px;
     }
 
     .added-list {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px 15px;
-    margin-top: 10px;
-    width: 50%;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin-top: 10px;
+      width: 50%;
     }
+
     .added-item {
       background: #f8f9fa;
       border-radius: 8px;
@@ -146,8 +192,10 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .select-all-box {
-      background-color: #f8f9fa; /* abu-abu muda */
+      background-color: #f8f9fa;
+      /* abu-abu muda */
       border-radius: 8px;
       padding: 6px 10px;
       margin-top: 5px;
@@ -165,7 +213,7 @@
       data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
       <i class="bi bi-list"></i>
     </button>
-</nav>
+  </nav>
 
   <!-- Sidebar -->
   <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
@@ -189,29 +237,36 @@
     <div class="form-wrapper">
       <h5 class="fw-semibold mb-4">Edit Notulen</h5>
 
-      <form action="dashboard_admin.php" method="post">
+      <form action="../proses/proses_edit_notulen.php" method="post" enctype="multipart/form-data" id="editForm">
+        <input type="hidden" name="id" value="<?= $id_notulen ?>">
+
         <div class="mb-3">
           <label class="form-label">Judul</label>
-          <input type="text" class="form-control" name="judul" value="Masukkan Judul Rapat" />
+          <input type="text" class="form-control" name="judul" value="<?= htmlspecialchars($notulen['judul_rapat']) ?>"
+            required />
         </div>
 
         <div class="mb-3">
           <label class="form-label">Tanggal Rapat</label>
           <div class="input-group">
-            <input type="text" class="form-control" name="tanggal" value="dd/mm/yyyy" />
-            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+            <input type="date" class="form-control" name="tanggal" value="<?= $notulen['tanggal_rapat'] ?>" required />
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Isi Notulen</label>
-            <textarea id="isi" rows="10" placeholder="Tulis isi notulen..."></textarea>
+          <textarea id="isi" name="isi" rows="10"><?= htmlspecialchars($notulen['isi_rapat']) ?></textarea>
         </div>
 
         <div class="mb-3">
           <label class="form-label">Ganti Lampiran (Opsional)</label>
           <input type="file" class="form-control" name="lampiran" />
-          <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
+          <?php if (!empty($notulen['Lampiran'])): ?>
+            <small class="text-muted d-block mt-1">File saat ini: <a href="../file/<?= $notulen['Lampiran'] ?>"
+                target="_blank"><?= $notulen['Lampiran'] ?></a></small>
+          <?php else: ?>
+            <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
+          <?php endif; ?>
         </div>
 
         <!-- Dropdown Peserta -->
@@ -226,28 +281,20 @@
             <div class="dropdown-menu p-2">
               <input type="text" class="form-control search-box" id="searchInput" placeholder="Cari nama notulen...">
               <div class="select-all-box">
-          <div class="form-check m-0">
-            <input class="form-check-input" type="checkbox" id="selectAll">
-            <label class="form-check-label fw-semibold" for="selectAll">Pilih Semua</label>
-          </div>
-        </div>
+                <div class="form-check m-0">
+                  <input class="form-check-input" type="checkbox" id="selectAll">
+                  <label class="form-check-label fw-semibold" for="selectAll">Pilih Semua</label>
+                </div>
+              </div>
               <div id="notulenList" class="mt-2">
-                <div class="form-check">
-                  <input class="form-check-input notulen-checkbox" type="checkbox" value="Della Reska" id="n1">
-                  <label class="form-check-label" for="n1">Della Reska</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input notulen-checkbox" type="checkbox" value="Andi Saputra" id="n2">
-                  <label class="form-check-label" for="n2">Andi Saputra</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input notulen-checkbox" type="checkbox" value="Budi Santoso" id="n3">
-                  <label class="form-check-label" for="n3">Budi Santoso</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input notulen-checkbox" type="checkbox" value="Citra Ayu" id="n4">
-                  <label class="form-check-label" for="n4">Citra Ayu</label>
-                </div>
+                <?php foreach ($all_users as $user_name): ?>
+                  <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox"
+                      value="<?= htmlspecialchars($user_name) ?>" id="user_<?= md5($user_name) ?>">
+                    <label class="form-check-label"
+                      for="user_<?= md5($user_name) ?>"><?= htmlspecialchars($user_name) ?></label>
+                  </div>
+                <?php endforeach; ?>
               </div>
               <button type="button" class="btn btn-save w-100 mt-3" id="addButton">Tambah</button>
             </div>
@@ -257,14 +304,26 @@
           <div id="addedList" class="added-list mt-3">
             <h6 class="fw-bold mb-2">Peserta yang Telah Ditambahkan:</h6>
             <div id="addedContainer">
-              <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+              <!-- Pre-fill participants -->
+              <?php foreach ($current_participants as $p): ?>
+                <?php if (!empty($p)): ?>
+                  <div class="added-item">
+                    <?= htmlspecialchars($p) ?>
+                    <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($p) ?>">
+                    <button type="button" class="btn btn-sm btn-danger remove-btn">x</button>
+                  </div>
+                <?php endif; ?>
+              <?php endforeach; ?>
+              <?php if (empty($current_participants) || (count($current_participants) == 1 && empty($current_participants[0]))): ?>
+                <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+              <?php endif; ?>
             </div>
           </div>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mt-4">
           <a href="dashboard_admin.php" class="btn btn-back">Kembali</a>
-          <button id="simpan_perubahan" type="button" class="btn btn-save px-4 py-2">Simpan Perubahan</button>
+          <button id="simpan_perubahan" type="submit" class="btn btn-save px-4 py-2">Simpan Perubahan</button>
         </div>
       </form>
     </div>
@@ -272,58 +331,27 @@
 
   <script>
     // === TINYMCE INITIALIZATION ===
-        tinymce.init({
-            selector: '#isi', 
-            height: 350,
-            menubar: 'edit view insert format tools table help', 
-            plugins: [
-                "advlist", "anchor", "autolink", "charmap", "code", "fullscreen",
-                "help", "image", "insertdatetime", "link", "lists", "media",
-                "preview", "searchreplace", "table", "visualblocks", "wordcount"
-            ],
-            toolbar: "undo redo | styles | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-            
-            setup: function (editor) {
-                editor.on('init', function (e) {
-                    if (editor.getContent() === '') {
-                        editor.setContent('<p>Tulis isi notulen...</p>');
-                    }
-                });
-                editor.on('click', function (e) {
-                    if (editor.getContent() === '<p>Tulis isi notulen...</p>') {
-                        editor.setContent('');
-                    }
-                });
-            }
-        });
-
-    // ===================
-    // Logout dan Simpan
-    // ===================
-    document.getElementById("logoutBtn").addEventListener("click", function () {
-      const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
-      if (confirmLogout) {
-        localStorage.removeItem("userData");
-        window.location.href = "../login.php";
-      }
+    tinymce.init({
+      selector: '#isi',
+      height: 350,
+      menubar: 'edit view insert format tools table help',
+      plugins: [
+        "advlist", "anchor", "autolink", "charmap", "code", "fullscreen",
+        "help", "image", "insertdatetime", "link", "lists", "media",
+        "preview", "searchreplace", "table", "visualblocks", "wordcount"
+      ],
+      toolbar: "undo redo | styles | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
     });
 
-    const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-    if (logoutBtnMobile) {
-      logoutBtnMobile.addEventListener("click", function () {
-        const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
-        if (konfirmasiLogout) {
-          localStorage.removeItem("adminData");
-          window.location.href = "../login.php";
-        }
-      });
+    // ===================
+    // Logout
+    // ===================
+    function confirmLogout() {
+      if (confirm("Apakah kamu yakin ingin logout?")) {
+        window.location.href = "../proses/proses_logout.php";
+      }
     }
-
-    document.getElementById("simpan_perubahan").addEventListener("click", () => {
-      if (confirm("Simpan perubahan?")) {
-        window.location.href = "dashboard_admin.php";
-      }
-    });
+    document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
 
     // ===================
     // Fungsi Dropdown Peserta
@@ -352,30 +380,50 @@
     // Tambah peserta
     addButton.addEventListener('click', function () {
       const selected = document.querySelectorAll('.notulen-checkbox:checked');
-      addedContainer.innerHTML = ''; // Kosongkan dulu
 
-      if (selected.length === 0) {
-        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-        return;
-      }
+      // Hapus placeholder jika ada
+      const placeholder = addedContainer.querySelector('.text-muted');
+      if (placeholder) placeholder.remove();
 
       selected.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'added-item';
-        div.innerHTML = `${item.value} <button class="btn btn-sm btn-danger remove-btn">x</button>`;
-        addedContainer.appendChild(div);
+        // Cek duplicate
+        const existingInputs = addedContainer.querySelectorAll('input[name="peserta[]"]');
+        let exists = false;
+        existingInputs.forEach(inp => {
+          if (inp.value === item.value) exists = true;
+        });
+
+        if (!exists) {
+          const div = document.createElement('div');
+          div.className = 'added-item';
+          div.innerHTML = `
+                ${item.value} 
+                <input type="hidden" name="peserta[]" value="${item.value}">
+                <button type="button" class="btn btn-sm btn-danger remove-btn">x</button>
+            `;
+          addedContainer.appendChild(div);
+        }
+        item.checked = false; // Uncheck setelah ditambah
       });
 
-      // Tombol hapus
+      selectAll.checked = false;
+      attachRemoveEvent();
+    });
+
+    function attachRemoveEvent() {
       document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.onclick = function () {
           this.parentElement.remove();
           if (addedContainer.children.length === 0) {
             addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
           }
-        });
+        };
       });
-    });
+    }
+
+    // Attach event on load for existing items
+    attachRemoveEvent();
+
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../koneksi.php';
 
-// ambil 10 notulen terbaru
-$sql = "SELECT id, judul_rapat, tanggal_rapat, Lampiran, peserta, created_at FROM tambah_notulen ORDER BY created_at DESC LIMIT 10";
+// Ambil 10 notulen terbaru
+$sql = "SELECT id, judul_rapat, tanggal_rapat, Lampiran, peserta, created_by, created_at FROM tambah_notulen ORDER BY created_at DESC LIMIT 10";
 $result = $conn->query($sql);
 $notulens = [];
 if ($result) {
@@ -87,28 +87,21 @@ if ($result) {
             <div class="d-flex align-items-center gap-2"><span class="fw-medium">Halo, Admin 👋</span></div>
         </div>
 
+        <!-- Highlight Cards -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">31/12/2025</span>
-                    <h6 class="mt-1 mb-1">Rapat Akhir Tahun</h6>
-                    <p>Tinjauan kinerja dan pencapaian target sepanjang tahun serta proyeksi strategi tahun mendatang</p>
+            <?php
+            // Ambil 3 notulen terbaru untuk highlight
+            $top3 = array_slice($notulens, 0, 3);
+            foreach ($top3 as $highlight):
+                ?>
+                <div class="col-md-4">
+                    <div class="highlight-card h-100">
+                        <span class="text-muted"><?= date('d/m/Y', strtotime($highlight['tanggal_rapat'])) ?></span>
+                        <h6 class="mt-1 mb-1"><?= htmlspecialchars($highlight['judul_rapat']) ?></h6>
+                        <p class="text-truncate">Dibuat oleh: <?= htmlspecialchars($highlight['created_by'] ?? 'Admin') ?></p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">30/12/2025</span>
-                    <h6 class="mt-1 mb-1">Evaluasi Kinerja</h6>
-                    <p>Pembahasan hasil kerja individual dan tim. Fokus pada peningkatan dan umpan balik konstruktif</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="highlight-card">
-                    <span class="text-muted">29/12/2025</span>
-                    <h6 class="mt-1 mb-1">Rapat Tim Proyek</h6>
-                    <p>Koordinasi terakhir untuk memastikan tugas proyek selesai dan siap untuk pelaporan akhir</p>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <!-- TABLE AREA -->
@@ -169,12 +162,11 @@ if ($result) {
         </section>
     </main>
 
-    <!-- Bootstrap JS bundle (inkl. Popper) -->
+    <!-- Bootstrap JS bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/admin.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Element refs
             const tableBody = document.getElementById("tableBody");
             const searchInput = document.getElementById("searchInput");
             const filterPembuat = document.getElementById("filterPembuat");
@@ -184,42 +176,11 @@ if ($result) {
             const logoutBtn = document.getElementById("logoutBtn");
             const logoutBtnMobile = document.getElementById("logoutBtnMobile");
 
-            // Simulasi data
             const notulenData = <?= json_encode($notulens, JSON_UNESCAPED_UNICODE) ?>;
 
             let currentPage = 1;
-            let rowsPerPage = 10; // number or "all"
+            let rowsPerPage = 10;
 
-            function renderTable(data, startIndex = 0) {
-                tableBody.innerHTML = "";
-                data.forEach((item, index) => {
-                    const nomorUrut = startIndex + index + 1;
-                    const tr = document.createElement("tr");
-
-                    // safe escape helper already defined (escapeHtml)
-                    const judul = escapeHtml(item.judul_rapat || '');
-                    const tanggal = escapeHtml(item.tanggal_rapat || '');
-                    // tampilkan pembuat (kalau kamu menyimpan pembuat di DB; jika tidak, bisa ambil dari session di server)
-                    // aku menggunakan created_at atau peserta sebagai placeholder pembuat jika perlu
-                    const pesertaText = escapeHtml(item.peserta || '');
-
-                    tr.innerHTML = `
-            <td>${nomorUrut}</td>
-            <td class="text-start">${judul}</td>
-            <td>${tanggal}</td>
-            <td>${pesertaText}</td>
-            <td class="text-center">
-                <a href="detail_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-primary" title="Lihat"><i class="bi bi-eye"></i></a>
-                <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-success" title="Edit"><i class="bi bi-pencil"></i></a>
-                <button class="btn btn-sm text-danger btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash"></i></button>
-            </td>
-        `;
-                    tableBody.appendChild(tr);
-                });
-            }
-
-
-            // Escape teks sederhana untuk keamanan XSS minimal (untuk data static ini cukup)
             function escapeHtml(text) {
                 return String(text)
                     .replace(/&/g, "&amp;")
@@ -228,9 +189,38 @@ if ($result) {
                     .replace(/"/g, "&quot;");
             }
 
-            // Isi opsi pembuat
+            function renderTable(data, startIndex = 0) {
+                tableBody.innerHTML = "";
+                if (data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data notulen.</td></tr>`;
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const nomorUrut = startIndex + index + 1;
+                    const tr = document.createElement("tr");
+
+                    const judul = escapeHtml(item.judul_rapat || '');
+                    const tanggal = escapeHtml(item.tanggal_rapat || '');
+                    const pembuat = escapeHtml(item.created_by || 'Admin');
+
+                    tr.innerHTML = `
+                        <td>${nomorUrut}</td>
+                        <td class="text-start">${judul}</td>
+                        <td>${tanggal}</td>
+                        <td>${pembuat}</td>
+                        <td class="text-center">
+                            <a href="detail_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-primary" title="Lihat"><i class="bi bi-eye"></i></a>
+                            <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-success" title="Edit"><i class="bi bi-pencil"></i></a>
+                            <button class="btn btn-sm text-danger btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
             function populateFilterPembuat() {
-                const pembuatUnik = [...new Set(notulenData.map(d => d.pembuat))];
+                const pembuatUnik = [...new Set(notulenData.map(d => d.created_by || 'Admin'))];
                 pembuatUnik.forEach(nama => {
                     const opt = document.createElement("option");
                     opt.value = nama;
@@ -246,16 +236,14 @@ if ($result) {
                 return notulenData.filter(item => {
                     const judul = (item.judul_rapat || '').toLowerCase();
                     const tanggal = (item.tanggal_rapat || '').toLowerCase();
-                    const peserta = (item.peserta || '').toLowerCase();
+                    const pembuat = (item.created_by || 'Admin').toLowerCase();
 
-                    const cocokKeyword = judul.includes(keyword) || tanggal.includes(keyword) || peserta.includes(keyword);
-                    const cocokPembuat = selectedPembuat === "" || (item.pembuat || '') === selectedPembuat; // jika kamu punya kolom pembuat
+                    const cocokKeyword = judul.includes(keyword) || tanggal.includes(keyword) || pembuat.includes(keyword);
+                    const cocokPembuat = selectedPembuat === "" || (item.created_by || 'Admin') === selectedPembuat;
                     return cocokKeyword && cocokPembuat;
                 });
             }
 
-
-            // Pagination helpers
             function paginate(data) {
                 if (rowsPerPage === "all") return data;
                 const start = (currentPage - 1) * rowsPerPage;
@@ -277,7 +265,6 @@ if ($result) {
                         e.preventDefault();
                         currentPage = i;
                         updateTable();
-                        // scroll to top of table if on mobile
                         window.scrollTo({
                             top: tableBody.getBoundingClientRect().top + window.scrollY - 100,
                             behavior: "smooth"
@@ -291,26 +278,9 @@ if ($result) {
             function updateTable() {
                 const filteredData = getFilteredData();
                 const totalRows = filteredData.length;
-
-                // JIKA BELUM ADA NOTULEN
-                if (totalRows === 0) {
-                    tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center text-muted py-4">
-                    Belum ada data notulen.
-                </td>
-            </tr>
-        `;
-                    pagination.innerHTML = "";
-                    dataInfo.textContent = "Menampilkan 0 dari 0 data";
-                    return;
-                }
-
-                const startIndex = (rowsPerPage === "all" || totalRows === 0)
-                    ? 0
-                    : (currentPage - 1) * rowsPerPage;
-
+                const startIndex = (rowsPerPage === "all" || totalRows === 0) ? 0 : (currentPage - 1) * rowsPerPage;
                 const paginatedData = paginate(filteredData);
+
                 renderTable(paginatedData, startIndex);
                 renderPagination(totalRows);
 
@@ -319,8 +289,6 @@ if ($result) {
                 dataInfo.textContent = `Menampilkan ${start}-${end} dari ${totalRows} data`;
             }
 
-
-            // Event listeners - search/filter/rowsPerPage
             searchInput.addEventListener("input", () => {
                 currentPage = 1;
                 updateTable();
@@ -330,8 +298,7 @@ if ($result) {
                 updateTable();
             });
             rowsPerPageSelect.addEventListener("change", () => {
-                rowsPerPage = rowsPerPageSelect.value === "all" ? "all" : parseInt(rowsPerPageSelect
-                    .value, 10);
+                rowsPerPage = rowsPerPageSelect.value === "all" ? "all" : parseInt(rowsPerPageSelect.value, 10);
                 currentPage = 1;
                 updateTable();
             });
@@ -352,10 +319,8 @@ if ($result) {
                     });
                     const json = await res.json();
                     if (json.success) {
-                        // remove from local array and re-render
                         const idx = notulenData.findIndex(n => String(n.id) === String(id));
                         if (idx !== -1) notulenData.splice(idx, 1);
-                        // refresh filter options and table
                         filterPembuat.innerHTML = '<option value="">Semua Pembuat</option>';
                         populateFilterPembuat();
                         updateTable();
@@ -368,8 +333,6 @@ if ($result) {
                 }
             });
 
-
-            // Logout buttons
             function setupLogoutButtons() {
                 if (logoutBtn) {
                     logoutBtn.addEventListener("click", function () {
@@ -389,7 +352,6 @@ if ($result) {
                 }
             }
 
-            // Initial setup
             populateFilterPembuat();
             updateTable();
             setupLogoutButtons();

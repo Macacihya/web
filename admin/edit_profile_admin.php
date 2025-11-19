@@ -11,16 +11,16 @@ if (!isset($_SESSION['user_id'])) {
  * Ambil data user dari session tapi selalu fallback ke string kosong
  * supaya tidak ada "undefined array key" dan htmlspecialchars tidak dikasih null.
  */
-$nama  = isset($_SESSION['user_name'])  ? $_SESSION['user_name']  : '';
+$nama = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : '';
 $email = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : '';
-$role  = isset($_SESSION['user_role'])  ? $_SESSION['user_role']  : '';
-$foto  = isset($_SESSION['user_foto'])   && !empty($_SESSION['user_foto']) ? $_SESSION['user_foto'] : 'user.jpg';
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+$foto = isset($_SESSION['user_foto']) && !empty($_SESSION['user_foto']) ? $_SESSION['user_foto'] : 'user.jpg';
 
 // Pastikan semua yang akan di-echo lewat htmlspecialchars selalu string
-$nama_html  = htmlspecialchars((string)$nama, ENT_QUOTES, 'UTF-8');
-$email_html = htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8');
-$role_html  = htmlspecialchars((string)$role, ENT_QUOTES, 'UTF-8');
-$foto_html  = htmlspecialchars((string)$foto, ENT_QUOTES, 'UTF-8');
+$nama_html = htmlspecialchars((string) $nama, ENT_QUOTES, 'UTF-8');
+$email_html = htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8');
+$role_html = htmlspecialchars((string) $role, ENT_QUOTES, 'UTF-8');
+$foto_html = htmlspecialchars((string) $foto, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -111,7 +111,8 @@ $foto_html  = htmlspecialchars((string)$foto, ENT_QUOTES, 'UTF-8');
 
             <form action="../proses/proses_edit_profile.php" method="POST" enctype="multipart/form-data">
                 <div class="text-center mb-4">
-                    <img src="../file/<?= $foto_html ?>" width="100" height="100" class="rounded-circle mb-2" alt="Foto Profil">
+                    <img src="../file/<?= $foto_html ?>" width="100" height="100" class="rounded-circle mb-2"
+                        alt="Foto Profil">
 
                     <div>
                         <input type="file" name="foto" class="form-control w-auto mx-auto" accept=".jpg,.png,.gif">

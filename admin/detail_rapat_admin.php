@@ -1,3 +1,39 @@
+<?php
+session_start();
+require_once __DIR__ . '/../koneksi.php';
+
+// Cek Login & Role
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit;
+}
+
+$id_notulen = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id_notulen <= 0) {
+    echo "<script>alert('ID Notulen tidak valid!'); window.location.href='dashboard_admin.php';</script>";
+    exit;
+}
+
+// Ambil data notulen
+$sql = "SELECT * FROM tambah_notulen WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_notulen);
+$stmt->execute();
+$result = $stmt->get_result();
+$notulen = $result->fetch_assoc();
+
+if (!$notulen) {
+    echo "<script>alert('Data notulen tidak ditemukan!'); window.location.href='dashboard_admin.php';</script>";
+    exit;
+}
+
+// Format tanggal
+$tanggal = date('d/m/Y', strtotime($notulen['tanggal_rapat']));
+
+// Parse peserta (string dipisahkan koma)
+$peserta_list = explode(',', $notulen['peserta']);
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -11,7 +47,7 @@
 </head>
 
 <body>
-<!-- navbar -->
+    <!-- navbar -->
     <nav class="navbar navbar-light bg-white sticky-top px-3">
         <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
@@ -26,9 +62,12 @@
                 <div>
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
-                        <li><a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-                        <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
-                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                        <li><a class="nav-link active" href="dashboard_admin.php"><i
+                                    class="bi bi-grid me-2"></i>Dashboard</a></li>
+                        <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
+                                Pengguna</a></li>
+                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -45,14 +84,17 @@
         <div>
             <h5 class="fw-bold mb-4 ms-3">Menu</h5>
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-                <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
+                <li><a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                </li>
+                <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
+                        Pengguna</a></li>
                 <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
             </ul>
         </div>
 
         <div class="text-center">
-            <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i
+                    class="bi bi-box-arrow-right me-2"></i>Logout</button>
         </div>
     </div>
 
@@ -69,69 +111,65 @@
         <div class="content-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h4 class="fw-bold mb-1">Rapat Animasi Hari Ini</h4>
-                    <p class="text-muted mb-2">Oleh: Febri</p>
+                    <h4 class="fw-bold mb-1"><?= htmlspecialchars($notulen['judul_rapat']); ?></h4>
+                    <p class="text-muted mb-2">Dibuat oleh: <?= htmlspecialchars($notulen['created_by'] ?? 'Admin'); ?>
+                    </p>
                 </div>
                 <div class="text-end">
                     <p class="fw-semibold mb-0">Tanggal Rapat:</p>
-                    <p class="mb-0">31/12/2025</p>
+                    <p class="mb-0"><?= $tanggal; ?></p>
                 </div>
             </div>
 
             <hr>
 
-            <p class="mb-4">Pembahasan dan review final konsep visual, timeline produksi, dan pembagian tugas untuk proyek animasi "Seri Petualangan Bintang"
-                Fokus utama pada keyframe dan blocking adegan pertama.
-            </p>
+            <div class="mb-4">
+                <?= $notulen['isi_rapat']; // Isi rapat biasanya HTML dari TinyMCE, jadi tidak di-escape ?>
+            </div>
 
             <h6 class="fw-semibold mb-2">Peserta Rapat:</h6>
             <div class="mb-3">
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> didit</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> rian12</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> ella</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> yohana</span>
+                <?php foreach ($peserta_list as $p): ?>
+                    <?php if (trim($p) !== ''): ?>
+                        <span class="participant-badge"><i class="bi bi-person-fill"></i>
+                            <?= htmlspecialchars(trim($p)); ?></span>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             </div>
 
             <h6 class="fw-semibold mb-2">Lampiran:</h6>
-            <button class="download-btn" onclick="downloadLampiran()">
-                <i class="bi bi-download"></i>
-            </button>
+            <?php if (!empty($notulen['Lampiran'])): ?>
+                <a href="../file/<?= htmlspecialchars($notulen['Lampiran']); ?>" class="btn btn-outline-success btn-sm"
+                    download>
+                    <i class="bi bi-download me-2"></i>Download Lampiran
+                </a>
+            <?php else: ?>
+                <p class="text-muted">Tidak ada lampiran.</p>
+            <?php endif; ?>
 
             <div class="text-end mt-4">
-                <a href="dashboard_admin.php" class="btn-back"><i class="bi bi-arrow-left me-1"></i> Kembali</a>
+                <a href="dashboard_admin.php" class="btn-back btn btn-light border"><i
+                        class="bi bi-arrow-left me-1"></i> Kembali</a>
             </div>
         </div>
     </div>
 
     <script>
-        function downloadLampiran() {
-            alert("Lampiran sedang diunduh (simulasi)...");
-            // contoh jika ingin mengarahkan ke file asli:
-            // window.location.href = 'lampiran.pdf';
-        }
         // =======================
         // Logout function
         // =======================
-        document.getElementById("logoutBtn").addEventListener("click", function () {
-            const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
-            if (confirmLogout) {
-                // Hapus data login dari localStorage
-                localStorage.removeItem("userData");
-                // Arahkan ke halaman login
-                window.location.href = "../login.php";
+        function confirmLogout() {
+            if (confirm("Apakah kamu yakin ingin logout?")) {
+                window.location.href = "../proses/proses_logout.php";
             }
-        });
-        // logout mobile
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
+
         const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-    if (logoutBtnMobile) {
-        logoutBtnMobile.addEventListener("click", function () {
-            const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
-            if (konfirmasiLogout) {
-                localStorage.removeItem("adminData");
-                window.location.href = "../login.php";
-            }
-        });
-    }
+        if (logoutBtnMobile) {
+            logoutBtnMobile.addEventListener("click", confirmLogout);
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

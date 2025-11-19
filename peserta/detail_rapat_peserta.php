@@ -1,169 +1,86 @@
-<!DOCTYPE html>
-<html lang="id">
+<?php
+session_start();
+require_once __DIR__ . '/../koneksi.php';
 
+// Cek Login & Role
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'peserta') {
+    header("Location: ../login.php");
+    exit;
+}
+
+$id_notulen = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id_notulen <= 0) {
+    echo "<script>alert('ID Notulen tidak valid!'); window.location.href='dashboard_peserta.php';</script>";
+    exit;
+}
+
+// Ambil data notulen
+$sql = "SELECT * FROM tambah_notulen WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_notulen);
+$stmt->execute();
+$result = $stmt->get_result();
+$notulen = $result->fetch_assoc();
+
+if (!$notulen) {
+    echo "<script>alert('Data notulen tidak ditemukan!'); window.location.href='dashboard_peserta.php';</script>";
+    exit;
+}
+
+// Siapkan variabel yang dipakai di HTML
+$tanggal = !empty($notulen['tanggal_rapat']) ? date('d M Y', strtotime($notulen['tanggal_rapat'])) : '-';
+$lampiran = $notulen['Lampiran'] ?? '';
+$created_by = $notulen['created_by'] ?? 'Admin';
+?>
+<!doctype html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lihat Rapat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
     <style>
-        body {
-            background-color: #fdf9f4;
-            font-family: "Poppins", sans-serif;
-        }
-
-        /* Sidebar */
-        .sidebar-content {
-            min-width: 250px;
-            background: #fff;
-            height: 100%;
-            border-right: 1px solid #eee;
-            padding: 1.5rem 1rem;
-        }
-
-        .sidebar-content .nav-link {
-            color: #555;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            border-radius: 0.5rem;
-        }
-
-        .sidebar-content .nav-link.active,
-        .sidebar-content .nav-link:hover {
-            background-color: #00b050;
-            color: #fff;
-        }
-
-        .logout-btn {
-            border: 1px solid #f8d7da;
-            color: #dc3545;
-            border-radius: .5rem;
-            margin-top: 2rem;
-            transition: 0.3s;
-        }
-
-        .logout-btn:hover {
-            background-color: #f8d7da;
-        }
-
-        /* Main content */
-        .main-content {
-            margin-left: 260px;
-            padding: 1.5rem;
-        }
-        @media (max-width: 991.98px) {
-            .main-content {
-                margin-left: 0;
-            }
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box {
-            width: 280px;
-        }
-
-        .search-box input {
-            border-radius: 12px;
-        }
-
-        .profile {
-            font-weight: 500;
-        }
-
-        .content-card {
-            background-color: #ffffff;
-            border-radius: 1rem;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .content-card h4 {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .content-card p {
-            margin-bottom: 0.25rem;
-        }
-
-        .content-card hr {
-            margin: 1rem 0;
-            color: #ddd;
-        }
-
-        .participant-badge {
-            background-color: #d1f3e0;
-            color: #15623d;
-            border-radius: 20px;
-            padding: 6px 15px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            margin-right: 8px;
-        }
-
-        .participant-badge i {
-            margin-right: 5px;
-        }
-
-        .btn-back {
-            color: #00b050;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .btn-back:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsif */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 100%;
-                min-height: auto;
-                border-right: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-        }
+        body { background-color: #fdf9f4; font-family: "Poppins", sans-serif; }
+        /* ... tetapkan style kamu ... */
+        .sidebar-content { min-width: 250px; background: #fff; height: 100%; border-right: 1px solid #eee; padding: 1.5rem 1rem; }
+        .sidebar-content .nav-link { color: #555; font-weight: 500; margin-bottom: 0.5rem; border-radius: 0.5rem; }
+        .sidebar-content .nav-link.active, .sidebar-content .nav-link:hover { background-color: #00b050; color: #fff; }
+        .logout-btn { border: 1px solid #f8d7da; color: #dc3545; border-radius: .5rem; margin-top: 2rem; transition: 0.3s; }
+        .logout-btn:hover { background-color: #f8d7da; }
+        .main-content { margin-left: 260px; padding: 1.5rem; }
+        @media (max-width: 991.98px) { .main-content { margin-left: 0; } }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .content-card { background-color: #ffffff; border-radius: 1rem; padding: 1.5rem 2rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+        .content-card h4 { font-weight: 600; margin-bottom: 0.25rem; }
+        .content-card p { margin-bottom: 0.25rem; }
+        .content-card hr { margin: 1rem 0; color: #ddd; }
+        .participant-badge { background-color: #d1f3e0; color: #15623d; border-radius: 20px; padding: 6px 15px; font-size: 0.9rem; display: inline-flex; align-items: center; margin-right: 8px; }
+        .participant-badge i { margin-right: 5px; }
+        .btn-back { color: #00b050; text-decoration: none; font-weight: 500; }
+        .btn-back:hover { text-decoration: underline; }
     </style>
 </head>
-
 <body>
-<!-- navbar -->
     <nav class="navbar navbar-light bg-white sticky-top px-3">
         <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
             <i class="bi bi-list"></i>
         </button>
     </nav>
-        <!-- sidebar moblie -->
-    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas"
-        aria-labelledby="sidebarOffcanvasLabel">
+
+    <!-- offcanvas & sidebar (sama seperti sebelumnya) -->
+    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-body p-0">
             <div class="sidebar-content d-flex flex-column justify-content-between h-100">
                 <div>
                     <h5 class="fw-bold mb-4 ms-3">Menu</h5>
                     <ul class="nav flex-column">
-                        <li><a class="nav-link" href="dashboard_pesertaa.php"><i
-                                    class="bi bi-grid me-2"></i>Dashboard</a></li>
-                        <li><a class="nav-link" href="profile_peserta.php"><i
-                                    class="bi bi-person-circle me-2"></i>Profile</a></li>
+                        <li><a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
+                        <li><a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                     </ul>
                 </div>
-
                 <div class="text-center mt-4">
                     <button id="logoutBtnMobile" class="btn logout-btn px-4 py-2">
                         <i class="bi bi-box-arrow-right me-2"></i>Logout
@@ -173,54 +90,50 @@
         </div>
     </div>
 
-
-
-    <!-- Sidebar -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
             <h5 class="fw-bold mb-4 ms-3">Menu</h5>
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
+                <li><a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
                 <li><a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
             </ul>
         </div>
-
         <div class="text-center">
             <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
         </div>
     </div>
 
-    <!-- Main -->
-        <div class="main-content">
+    <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div></div>
             <div class="profile">
-                <span>Halo, Peserta👋</span>
+                <span>Halo, <?= htmlspecialchars($_SESSION['user_name'] ?? 'Peserta') ?>👋</span>
             </div>
         </div>
+
         <!-- Detail Rapat -->
         <div class="content-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h4>Rapat Animasi Hari Ini </h4>
-                    <p class="text-muted">Oleh: Didit</p>
+                    <h4><?= htmlspecialchars($notulen['judul_rapat']); ?></h4>
+                    <p class="text-muted">Dibuat oleh: <?= htmlspecialchars($created_by); ?></p>
                 </div>
                 <div class="text-end">
                     <p class="fw-semibold mb-0">Tanggal Rapat:</p>
-                    <p class="mb-0">31/12/2025</p>
+                    <p class="mb-0"><?= htmlspecialchars($tanggal); ?></p>
                 </div>
             </div>
 
             <hr>
 
-            <p>Pembahasan dan review final konsep visual, timeline produksi, dan pembagian tugas untuk proyek animasi "Seri Petualangan Bintang" Fokus utama pada keyframe dan blocking adegan pertama.</p>
-
-            <h6 class="fw-semibold mt-3 mb-2">Peserta Rapat:</h6>
-            <div class="mb-3">
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> didit</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> rian12</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> ella</span>
-                <span class="participant-badge"><i class="bi bi-person-fill"></i> yohana</span>
+            <div class="mb-4">
+            <?php if (!empty($lampiran) && file_exists(__DIR__ . '/../uploads/' . $lampiran)): ?>
+                <a href="<?= '../uploads/' . rawurlencode($lampiran) ?>" class="btn btn-outline-secondary" download>
+                    <i class="bi bi-download me-2"></i>Download Lampiran
+                </a>
+            <?php else: ?>
+                <p class="text-muted">Tidak ada lampiran.</p>
+            <?php endif; ?>
             </div>
 
             <div class="text-end mt-4">
@@ -231,30 +144,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // =======================
-        // 1. Logout function
-        // =======================
-        document.getElementById("logoutBtn").addEventListener("click", function () {
-            const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
-            if (confirmLogout) {
-                // Hapus data login dari localStorage
-                localStorage.removeItem("userData");
-                // Arahkan ke halaman login
-                window.location.href = "../login.php";
+        // Logout function
+        function confirmLogout() {
+            if (confirm("Apakah kamu yakin ingin logout?")) {
+                window.location.href = "../proses/proses_logout.php";
             }
-                // logout mobile
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", confirmLogout);
+
         const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-    if (logoutBtnMobile) {
-        logoutBtnMobile.addEventListener("click", function () {
-            const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
-            if (konfirmasiLogout) {
-                localStorage.removeItem("pesertaData");
-                window.location.href = "../login.php";
-            }
-        });
-    }
-        });
+        if (logoutBtnMobile) {
+            logoutBtnMobile.addEventListener("click", confirmLogout);
+        }
     </script>
 </body>
-
 </html>
