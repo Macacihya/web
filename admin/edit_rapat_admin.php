@@ -37,7 +37,9 @@ while ($row = $res_users->fetch_assoc()) {
 }
 
 // Parse peserta yang sudah ada di notulen
-$current_participants = array_filter(array_map('trim', explode(',', $notulen['peserta'])), function($v){ return $v !== ''; });
+$current_participants = array_filter(array_map('trim', explode(',', $notulen['peserta'])), function ($v) {
+  return $v !== '';
+});
 // Jika peserta disimpan sebagai ID, ambil nama-nama peserta dari DB
 $participants_map = []; // id => nama
 if (!empty($current_participants)) {
@@ -57,10 +59,10 @@ $current_participant_items = [];
 foreach ($current_participants as $pid) {
   $pid_int = (int)$pid;
   if ($pid_int > 0 && isset($participants_map[$pid_int])) {
-    $current_participant_items[] = ['id'=>$pid_int, 'nama'=>$participants_map[$pid_int]];
+    $current_participant_items[] = ['id' => $pid_int, 'nama' => $participants_map[$pid_int]];
   } elseif ($pid !== '') {
     // fallback: jika DB tidak punya, tampilkan apa yang ada (biasanya not expected)
-    $current_participant_items[] = ['id'=>$pid, 'nama'=>$pid];
+    $current_participant_items[] = ['id' => $pid, 'nama' => $pid];
   }
 }
 ?>
@@ -287,10 +289,10 @@ foreach ($current_participants as $pid) {
           <label class="form-label">Ganti Lampiran (Opsional)</label>
           <input type="file" class="form-control" name="lampiran" />
           <?php if (!empty($notulen['Lampiran'])): ?>
-          <small class="text-muted d-block mt-1">File saat ini: <a href="../file/<?= $notulen['Lampiran'] ?>"
-              target="_blank"><?= $notulen['Lampiran'] ?></a></small>
+            <small class="text-muted d-block mt-1">File saat ini: <a href="../file/<?= $notulen['Lampiran'] ?>"
+                target="_blank"><?= $notulen['Lampiran'] ?></a></small>
           <?php else: ?>
-          <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
+            <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
           <?php endif; ?>
         </div>
 
@@ -298,29 +300,31 @@ foreach ($current_participants as $pid) {
         <div class="mb-3">
           <label class="form-label">Peserta Notulen</label>
           <div class="dropdown w-50">
-            <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
+            <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
               Pilih Peserta
             </button>
 
-            <div class="dropdown-menu p-2">
-              <input type="text" class="form-control search-box" id="searchInput" placeholder="Cari nama notulen...">
-              <div class="select-all-box">
-                <div class="form-check m-0">
-                  <input class="form-check-input" type="checkbox" id="selectAll">
-                  <label class="form-check-label fw-semibold" for="selectAll">Pilih Semua</label>
-                </div>
+            <div class="dropdown-menu w-100 p-3" style="max-height:360px; overflow:auto;">
+              <input id="searchInput" type="search" class="form-control mb-2" placeholder="Cari peserta...">
+
+              <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" id="selectAll">
+                <label class="form-check-label" for="selectAll">Pilih Semua</label>
               </div>
+
+              <hr>
+
               <div id="notulenList" class="mt-2">
                 <?php foreach ($all_users as $user): ?>
-                <div class="form-check">
-                  <input class="form-check-input notulen-checkbox" type="checkbox" value="<?= (int)$user['id'] ?>"
-                    id="user_<?= md5($user['id']) ?>">
-                  <label class="form-check-label"
-                    for="user_<?= md5($user['id']) ?>"><?= htmlspecialchars($user['nama']) ?></label>
-                </div>
+                  <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="<?= (int)$user['id'] ?>"
+                      id="user_<?= md5($user['id']) ?>">
+                    <label class="form-check-label"
+                      for="user_<?= md5($user['id']) ?>"><?= htmlspecialchars($user['nama']) ?></label>
+                  </div>
                 <?php endforeach; ?>
               </div>
+              <hr>
               <button type="button" class="btn btn-save w-100 mt-3" id="addButton">Tambah</button>
             </div>
           </div>
@@ -331,14 +335,14 @@ foreach ($current_participants as $pid) {
             <div id="addedContainer">
               <!-- Pre-fill participants -->
               <?php foreach ($current_participant_items as $item): ?>
-              <div class="added-item">
-                <?= htmlspecialchars($item['nama']) ?>
-                <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($item['id']) ?>">
-                <button type="button" class="btn btn-sm btn-danger remove-btn">x</button>
-              </div>
+                <div class="added-item">
+                  <?= htmlspecialchars($item['nama']) ?>
+                  <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($item['id']) ?>">
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-btn">hapus</button>
+                </div>
               <?php endforeach; ?>
               <?php if (empty($current_participants) || (count($current_participants) == 1 && empty($current_participants[0]))): ?>
-              <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+                <p class="text-muted">Belum ada peserta yang ditambahkan</p>
               <?php endif; ?>
             </div>
           </div>
@@ -395,13 +399,13 @@ foreach ($current_participants as $pid) {
     });
 
     // Select all
-    selectAll.addEventListener('change', function () {
+    selectAll.addEventListener('change', function() {
       const allCheckboxes = document.querySelectorAll('.notulen-checkbox');
       allCheckboxes.forEach(cb => cb.checked = this.checked);
     });
 
     // Tambah peserta (JS)
-    addButton.addEventListener('click', function () {
+    addButton.addEventListener('click', function() {
       const selected = document.querySelectorAll('.notulen-checkbox:checked');
 
       // Hapus placeholder jika ada
@@ -434,9 +438,10 @@ foreach ($current_participants as $pid) {
 
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'btn btn-sm btn-danger remove-btn';
-          btn.textContent = 'x';
+          btn.className = 'btn btn-sm btn-outline-danger remove-btn';
+          btn.textContent = 'hapus';
           div.appendChild(btn);
+
 
           addedContainer.appendChild(div);
         }
@@ -449,7 +454,7 @@ foreach ($current_participants as $pid) {
 
     function attachRemoveEvent() {
       document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.onclick = function () {
+        btn.onclick = function() {
           const parent = this.parentElement;
           parent.remove();
           // cek apakah masih ada .added-item tersisa

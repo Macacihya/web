@@ -118,14 +118,12 @@ if ($q) {
                 <!-- PESERTA -->
                 <div class="mb-3">
                     <label class="form-label">Peserta Notulen</label>
-
                     <div class="dropdown w-50">
                         <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             Pilih Peserta
                         </button>
 
                         <div class="dropdown-menu w-100 p-3" style="max-height:360px; overflow:auto;">
-
                             <input id="searchInput" type="search" class="form-control mb-2" placeholder="Cari peserta...">
 
                             <div class="form-check mb-2">
