@@ -118,29 +118,22 @@ if ($q) {
                 <!-- PESERTA -->
                 <div class="mb-3">
                     <label class="form-label">Peserta Notulen</label>
-                    <div class="dropdown w-50">
-                        <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Pilih Peserta
-                        </button>
+                    
+                    <!-- Trigger button -->
+                    <div class="dropdown w-100" data-bs-auto-close="false">
+                        <button id="dropdownToggle" class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Pilih Peserta</button>
 
-<<<<<<< HEAD
-    <!-- Trigger button -->
-    <div class="dropdown w-50" data-bs-auto-close="false">
-        <button id="dropdownToggle" class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
-            aria-expanded="false">Pilih Peserta</button>
-=======
-                        <div class="dropdown-menu w-100 p-3" style="max-height:360px; overflow:auto;">
-                            <input id="searchInput" type="search" class="form-control mb-2" placeholder="Cari peserta...">
->>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
+                        <ul class="dropdown-menu w-100">
+                            <li class="px-3 py-2">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                    <label class="form-check-label" for="selectAll">Pilih Semua</label>
+                                </div>
+                                <hr>
+                            </li>
 
-                            <div class="form-check mb-2">
-                                <input type="checkbox" class="form-check-input" id="selectAll">
-                                <label class="form-check-label" for="selectAll">Pilih Semua</label>
-                            </div>
-
-                            <hr>
-
-                            <div id="notulenList">
+                            <li id="notulenList" class="px-3">
                                 <?php foreach ($users as $u): ?>
                                 <div class="form-check notulen-item py-1">
                                     <input class="form-check-input notulen-checkbox"
@@ -153,28 +146,19 @@ if ($q) {
                                     </label>
                                 </div>
                                 <?php endforeach; ?>
-                            </div>
+                            </li>
 
-                            <hr>
+                            <li><hr class="dropdown-divider"></li>
 
-                            <div class="d-flex justify-content-between">
-                                <button type="button" id="clearSearchBtn" class="btn btn-light btn-sm">Reset</button>
-                                <button type="button" id="addButton" class="btn btn-success btn-sm">Tambah</button>
-                            </div>
-
-                        </div>
+                            <li class="px-3 py-2">
+                                <div class="d-flex justify-content-between gap-2">
+                                    <button type="button" id="clearSearchBtn" class="btn btn-light btn-sm flex-grow-1">Reset</button>
+                                    <button type="button" id="addButton" class="btn btn-success btn-sm flex-grow-1">Tambah</button>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-
-<<<<<<< HEAD
-            <hr />
-
-            <!-- Actions -->
-            <div class="d-flex justify-content-between">
-                <button id="clearSearchBtn" type="button" class="btn btn-sm btn-light">Reset</button>
-                <button id="addButton" type="button" class="btn btn-sm btn-success">Tambah</button>
-            </div>
-        </div>
-    </div>
+                </div>
 
                 <!-- List peserta (target) -->
                 <div id="addedList" class="added-list mt-3">
@@ -183,17 +167,6 @@ if ($q) {
                         <p class="text-muted">Belum ada peserta yang ditambahkan</p>
                     </div>
                 </div>
-            </div>
-=======
-                    <!-- LIST PESERTA YANG DIPILIH -->
-                    <div id="addedList" class="added-list mt-3">
-                        <h6 class="fw-bold mb-2">Peserta yang Ditambahkan:</h6>
-                        <div id="addedContainer">
-                            <p class="text-muted">Belum ada peserta yang ditambahkan</p>
-                        </div>
-                    </div>
-                </div>
->>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
 
                 <!-- Submit -->
                 <div class="d-flex justify-content-end">
@@ -208,12 +181,13 @@ if ($q) {
 
 <script>
 /* =======================
-   TINYMCE
+   TINYMCE - WITH API KEY
 ======================= */
 tinymce.init({
     selector: '#isi',
     height: 350,
     menubar: false,
+    api_key: 'cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5',
     plugins: "lists link table code",
     toolbar: "undo redo | bold italic underline | bullist numlist | link",
 });
@@ -255,178 +229,122 @@ document.getElementById("notulenForm").addEventListener("submit", async function
 /* =======================
    PESERTA HANDLING
 ======================= */
-const searchInput = document.getElementById("searchInput");
-const selectAll = document.getElementById("selectAll");
-const addButton = document.getElementById("addButton");
-const clearSearchBtn = document.getElementById("clearSearchBtn");
-const addedContainer = document.getElementById("addedContainer");
 
-// Search
-searchInput.addEventListener("keyup", () => {
-    const val = searchInput.value.toLowerCase();
+// Helper function untuk escape HTML
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
 
-    document.querySelectorAll(".notulen-item").forEach(item => {
-        const name = item.innerText.toLowerCase();
-        item.style.display = name.includes(val) ? "" : "none";
-    });
-});
+const selectAll = document.getElementById('selectAll');
+const addButton = document.getElementById('addButton');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
+const addedContainer = document.getElementById('addedContainer');
+const notulenCheckboxes = document.querySelectorAll('.notulen-checkbox');
 
-// Reset search
-clearSearchBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    searchInput.dispatchEvent(new Event("keyup"));
-});
-
-<<<<<<< HEAD
-        // Logout Desktop
-        document.getElementById("logoutBtn").addEventListener("click", function () {
-            if (confirm("Apakah kamu yakin ingin logout?")) {
-                localStorage.removeItem("userData");
-                window.location.href = "../proses/proses_logout.php";
-            }
+// Select All checkbox
+if (selectAll) {
+    selectAll.addEventListener('change', function () {
+        notulenCheckboxes.forEach(cb => {
+            cb.checked = this.checked;
         });
+    });
+}
 
-        // Logout Mobile
-        const logoutBtnMobile = document.getElementById("logoutBtnMobile");
-        if (logoutBtnMobile) {
-            logoutBtnMobile.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
-                    localStorage.removeItem("adminData");
-                    window.location.href = "../proses/proses_logout.php";
+// Clear/Reset button
+if (clearSearchBtn) {
+    clearSearchBtn.addEventListener('click', function () {
+        notulenCheckboxes.forEach(cb => cb.checked = false);
+        selectAll.checked = false;
+    });
+}
+
+// Add participants button
+if (addButton) {
+    addButton.addEventListener('click', function () {
+        const selected = document.querySelectorAll('.notulen-checkbox:checked');
+        
+        if (selected.length === 0) {
+            alert('Pilih minimal 1 peserta');
+            return;
+        }
+
+        // Get existing participant IDs
+        const existingIds = new Set();
+        addedContainer.querySelectorAll('.added-item').forEach(item => {
+            existingIds.add(item.dataset.id);
+        });
+        
+        // Clear empty message
+        const emptyMsg = addedContainer.querySelector('.text-muted');
+        if (emptyMsg) {
+            emptyMsg.remove();
+        }
+
+        // Add selected participants
+        selected.forEach(cb => {
+            const id = cb.value;
+            const name = cb.dataset.name || cb.nextElementSibling?.textContent?.trim() || 'Unknown';
+            
+            // Prevent duplicates
+            if (existingIds.has(id)) return;
+
+            const div = document.createElement('div');
+            div.className = 'added-item d-flex align-items-center justify-content-between gap-2 mb-2 p-2 bg-light rounded';
+            div.dataset.id = id;
+            div.innerHTML = `
+                <span>${escapeHtml(name)}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-btn" data-id="${id}">
+                    <i class="bi bi-x"></i>
+                </button>
+            `;
+            addedContainer.appendChild(div);
+            existingIds.add(id);
+            
+            // Remove button click handler
+            const removeBtn = div.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                const cb = document.querySelector(`.notulen-checkbox[value="${id}"]`);
+                if (cb) cb.checked = false;
+                div.remove();
+                
+                // Show empty message if no participants
+                if (addedContainer.children.length === 0) {
+                    addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
                 }
             });
-        }
-        // ===================
-        // Fungsi Dropdown Peserta
-        // ===================
-        
-        // Helper function untuk escape HTML
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-        
-        const searchInput = document.getElementById('searchInput');
-        const notulenItems = document.querySelectorAll('#notulenList .form-check');
-        const selectAll = document.getElementById('selectAll');
-        const addButton = document.getElementById('addButton');
-        const addedContainer = document.getElementById('addedContainer');
-=======
-// Select all
-selectAll.addEventListener("change", function () {
-    document.querySelectorAll(".notulen-checkbox").forEach(cb => cb.checked = selectAll.checked);
-});
-
-// Tambah peserta
-addButton.addEventListener("click", () => {
-    const selected = document.querySelectorAll(".notulen-checkbox:checked");
->>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
-
-    if (selected.length === 0) {
-        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-        return;
-    }
-
-    if (addedContainer.querySelector("p")) addedContainer.innerHTML = "";
-
-<<<<<<< HEAD
-        // Tambah peserta
-        addButton.addEventListener('click', function () {
-            const selected = document.querySelectorAll('.notulen-checkbox:checked');
-            
-            if (selected.length === 0) {
-                addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-                return;
-            }
-
-            // Ambil peserta yang sudah ada untuk mencegah duplikat
-            const existingIds = new Set();
-            addedContainer.querySelectorAll('.added-item').forEach(item => {
-                existingIds.add(item.dataset.id);
-            });
-            
-            // Hapus pesan "Belum ada peserta" jika ada
-            const emptyMsg = addedContainer.querySelector('.text-muted');
-            if (emptyMsg) {
-                emptyMsg.remove();
-            }
-
-            selected.forEach(cb => {
-                const id = cb.value;
-                const name = cb.dataset.name || cb.nextElementSibling?.textContent?.trim() || 'Unknown';
-                
-                // Cek jika id sudah ada untuk mencegah duplikat
-                if (existingIds.has(id)) return;
-
-                const div = document.createElement('div');
-                div.className = 'added-item d-flex align-items-center gap-2 mb-2';
-                div.dataset.id = id;
-                div.innerHTML = `
-                    <span class="flex-grow-1">${escapeHtml(name)}</span>
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-btn">Hapus</button>
-                `;
-                addedContainer.appendChild(div);
-                
-                // Attach event listener ke tombol hapus
-                const removeBtn = div.querySelector('.remove-btn');
-                removeBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const id = this.parentElement.dataset.id;
-                    const cb = document.querySelector(`.notulen-checkbox[value="${id}"]`);
-                    if (cb) cb.checked = false;
-                    this.parentElement.remove();
-                    if (addedContainer.children.length === 0) {
-                        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-                    }
-                });
-            });
         });
-
-    </script>
-=======
-    selected.forEach(cb => {
-        const id = cb.value;
-        const name = cb.dataset.name;
-
-        if (addedContainer.querySelector(`[data-id="${id}"]`)) return;
-
-        const row = document.createElement("div");
-        row.className = "added-item d-flex align-items-center gap-2 mb-2";
-        row.dataset.id = id;
-
-        row.innerHTML = `
-            <span class="flex-grow-1">${name}</span>
-            <button class="btn btn-sm btn-outline-danger remove-btn">Hapus</button>
-        `;
-
-        addedContainer.appendChild(row);
     });
-});
+}
 
-// Hapus peserta
-addedContainer.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("remove-btn")) return;
+// Logout handlers
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+        if (confirm("Apakah kamu yakin ingin logout?")) {
+            localStorage.removeItem("adminData");
+            window.location.href = "../proses/proses_logout.php";
+        }
+    });
+}
 
-    const row = e.target.closest(".added-item");
-
-    const id = row.dataset.id;
-    const cb = document.querySelector(`.notulen-checkbox[value="${id}"]`);
-    if (cb) cb.checked = false;
-
-    row.remove();
-
-    if (addedContainer.children.length === 0) {
-        addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
-    }
-});
-</script>
-
->>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
+const logoutBtnMobile = document.getElementById("logoutBtnMobile");
+if (logoutBtnMobile) {
+    logoutBtnMobile.addEventListener("click", function () {
+        if (confirm("Apakah kamu yakin ingin logout?")) {
+            localStorage.removeItem("adminData");
+            window.location.href = "../proses/proses_logout.php";
+        }
+    });
+}
+    </script>
 </body>
 </html>

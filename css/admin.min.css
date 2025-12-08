@@ -245,69 +245,74 @@ body {
 
     .mobile-card-inner {
         background: #fff;
-        border-radius: 1rem;
-        border: 1px solid #e0e0e0;
-        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e8e8e8;
+        padding: 0.875rem 0.875rem;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
 
     .mobile-card-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.375rem;
     }
 
     .mobile-status-badge {
         background: #e8f5e9;
         color: var(--primary);
         border-radius: 0.25rem;
-        padding: 0.25rem 0.75rem;
-        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
         font-weight: 600;
         white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .mobile-card-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.375rem;
         align-items: center;
+        flex-shrink: 0;
     }
 
     .mobile-card-actions .btn-sm {
-        padding: 0.35rem 0.5rem;
+        padding: 0.4rem 0.45rem;
+        font-size: 0.85rem;
     }
 
     .mobile-card-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #000;
-        margin-top: 0.25rem;
+        line-height: 1.3;
+        margin: 0.125rem 0 0 0;
     }
 
     .mobile-card-info {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        font-size: 0.9rem;
+        gap: 0.375rem;
+        font-size: 0.85rem;
         color: #666;
     }
 
     .mobile-card-info-row {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.375rem;
     }
 
     .mobile-card-info-row i {
         color: var(--primary);
-        min-width: 1rem;
+        min-width: 0.9rem;
+        font-size: 0.9rem;
     }
 
     .table-wrapper {
-        padding-bottom: 0.5rem;
+        padding-bottom: 1rem;
     }
 }
 
@@ -846,6 +851,52 @@ body {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
 }
 
+@media (max-width: 575.98px) {
+    .form-section {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .form-section .mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 1rem;
+        padding: 0.6rem 0.75rem;
+    }
+
+    .btn-save {
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .dropdown-menu {
+        font-size: 0.9rem;
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+
+    .form-check {
+        font-size: 0.95rem;
+    }
+
+    .added-list {
+        margin-top: 1.5rem;
+    }
+
+    .added-list h6 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
 .form-control,
 .form-select {
     background-color: #fff;
@@ -1188,13 +1239,31 @@ body {
     }
 
     .added-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin: 5px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+        background: #f0f8f5;
+        border-left: 3px solid var(--primary);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .added-item .remove-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .added-list {
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 0.75rem;
+    }
+
+    .added-list h6 {
+        color: #333;
+        margin-bottom: 1rem;
     }
     .select-all-box {
       background-color: #f8f9fa; /* abu-abu muda */
@@ -1230,7 +1299,7 @@ body {
             border: none;
             border-left: none;
             border-radius: 0;
-            margin-bottom: 8px;
+            margin-bottom: 0.75rem;
             padding: 0;
             box-shadow: none;
             transition: none;
