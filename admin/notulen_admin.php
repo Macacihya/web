@@ -1,5 +1,22 @@
 <?php
+session_start();
 require_once __DIR__ . '/../koneksi.php';
+
+// Pastikan login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// Ambil data user login
+$userId = (int) $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT nama FROM users WHERE id = ?");
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$userRes = $stmt->get_result();
+$userData = $userRes->fetch_assoc();
+$stmt->close();
+$userName = $userData['nama'] ?? 'Admin';
 
 // Ambil peserta
 $users = [];
@@ -38,7 +55,7 @@ if ($q) {
     <!-- Sidebar Mobile -->
     <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas">
         <div class="offcanvas-body p-0">
-            <h5 class="fw-bold mb-3 ms-3">Menu</h5>
+            <h4 class="fw-bold mb-3 ms-3">MENU</h4>
             <ul class="nav flex-column">
                 <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
                 <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
@@ -55,7 +72,7 @@ if ($q) {
     <!-- Sidebar Desktop -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
-            <h5 class="fw-bold mb-4 ms-3">Menu</h5>
+            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
             <ul class="nav flex-column">
                 <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
                 <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
@@ -74,7 +91,7 @@ if ($q) {
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div></div>
-            <div class="profile"><span>Halo, Admin 👋</span></div>
+            <div class="profile"><span>Halo, <?= htmlspecialchars($userName) ?> 👋</span></div>
         </div>
 
         <nav aria-label="breadcrumb">
