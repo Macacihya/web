@@ -37,7 +37,9 @@ while ($row = $res_users->fetch_assoc()) {
 }
 
 // Parse peserta yang sudah ada di notulen
-$current_participants = array_filter(array_map('trim', explode(',', $notulen['peserta'])), function($v){ return $v !== ''; });
+$current_participants = array_filter(array_map('trim', explode(',', $notulen['peserta'])), function ($v) {
+  return $v !== '';
+});
 // Jika peserta disimpan sebagai ID, ambil nama-nama peserta dari DB
 $participants_map = []; // id => nama
 if (!empty($current_participants)) {
@@ -57,10 +59,10 @@ $current_participant_items = [];
 foreach ($current_participants as $pid) {
   $pid_int = (int)$pid;
   if ($pid_int > 0 && isset($participants_map[$pid_int])) {
-    $current_participant_items[] = ['id'=>$pid_int, 'nama'=>$participants_map[$pid_int]];
+    $current_participant_items[] = ['id' => $pid_int, 'nama' => $participants_map[$pid_int]];
   } elseif ($pid !== '') {
     // fallback: jika DB tidak punya, tampilkan apa yang ada (biasanya not expected)
-    $current_participant_items[] = ['id'=>$pid, 'nama'=>$pid];
+    $current_participant_items[] = ['id' => $pid, 'nama' => $pid];
   }
 }
 ?>
@@ -135,6 +137,7 @@ foreach ($current_participants as $pid) {
           <label class="form-label">Tambah Lampiran (Opsional)</label>
           <input type="file" class="form-control" name="lampiran" />
           <?php if (!empty($notulen['Lampiran'])): ?>
+<<<<<<< HEAD
             <small class="text-muted d-block mt-2"><strong>File yang sudah terlampir:</strong></small>
             <div class="mt-1">
               <?php 
@@ -154,6 +157,10 @@ foreach ($current_participants as $pid) {
                 <small class="text-muted">Belum ada file terlampir.</small>
               <?php endif; ?>
             </div>
+=======
+            <small class="text-muted d-block mt-1">File saat ini: <a href="../file/<?= $notulen['Lampiran'] ?>"
+                target="_blank"><?= $notulen['Lampiran'] ?></a></small>
+>>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
           <?php else: ?>
             <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
           <?php endif; ?>
@@ -162,6 +169,7 @@ foreach ($current_participants as $pid) {
         <!-- Dropdown Peserta -->
         <div class="mb-3">
           <label class="form-label">Peserta Notulen</label>
+<<<<<<< HEAD
           <div class="dropdown w-50" data-bs-auto-close="false">
             <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
               aria-expanded="false">
@@ -201,6 +209,35 @@ foreach ($current_participants as $pid) {
                 <button id="clearSearchBtn" type="button" class="btn btn-sm btn-light">Reset</button>
                 <button id="addButton" type="button" class="btn btn-sm btn-success">Tambah</button>
               </div>
+=======
+          <div class="dropdown w-50">
+            <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Pilih Peserta
+            </button>
+
+            <div class="dropdown-menu w-100 p-3" style="max-height:360px; overflow:auto;">
+              <input id="searchInput" type="search" class="form-control mb-2" placeholder="Cari peserta...">
+
+              <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" id="selectAll">
+                <label class="form-check-label" for="selectAll">Pilih Semua</label>
+              </div>
+
+              <hr>
+
+              <div id="notulenList" class="mt-2">
+                <?php foreach ($all_users as $user): ?>
+                  <div class="form-check">
+                    <input class="form-check-input notulen-checkbox" type="checkbox" value="<?= (int)$user['id'] ?>"
+                      id="user_<?= md5($user['id']) ?>">
+                    <label class="form-check-label"
+                      for="user_<?= md5($user['id']) ?>"><?= htmlspecialchars($user['nama']) ?></label>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+              <hr>
+              <button type="button" class="btn btn-save w-100 mt-3" id="addButton">Tambah</button>
+>>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
             </div>
           </div>
 
@@ -210,14 +247,14 @@ foreach ($current_participants as $pid) {
             <div id="addedContainer">
               <!-- Pre-fill participants -->
               <?php foreach ($current_participant_items as $item): ?>
-              <div class="added-item">
-                <?= htmlspecialchars($item['nama']) ?>
-                <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($item['id']) ?>">
-                <button type="button" class="btn btn-sm btn-danger remove-btn">x</button>
-              </div>
+                <div class="added-item">
+                  <?= htmlspecialchars($item['nama']) ?>
+                  <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($item['id']) ?>">
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-btn">hapus</button>
+                </div>
               <?php endforeach; ?>
               <?php if (empty($current_participants) || (count($current_participants) == 1 && empty($current_participants[0]))): ?>
-              <p class="text-muted">Belum ada peserta yang ditambahkan</p>
+                <p class="text-muted">Belum ada peserta yang ditambahkan</p>
               <?php endif; ?>
             </div>
           </div>
@@ -296,13 +333,18 @@ foreach ($current_participants as $pid) {
     });
 
     // Select all
-    selectAll.addEventListener('change', function () {
+    selectAll.addEventListener('change', function() {
       const allCheckboxes = document.querySelectorAll('.notulen-checkbox');
       allCheckboxes.forEach(cb => cb.checked = this.checked);
     });
 
+<<<<<<< HEAD
     // Tambah peserta
     addButton.addEventListener('click', function () {
+=======
+    // Tambah peserta (JS)
+    addButton.addEventListener('click', function() {
+>>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
       const selected = document.querySelectorAll('.notulen-checkbox:checked');
       
       if (selected.length === 0) {
@@ -331,6 +373,7 @@ foreach ($current_participants as $pid) {
         // Cek jika id sudah ada untuk mencegah duplikat
         if (existingIds.has(id)) return;
 
+<<<<<<< HEAD
         const div = document.createElement('div');
         div.className = 'added-item d-flex align-items-center gap-2 mb-2';
         div.innerHTML = `
@@ -346,6 +389,51 @@ foreach ($current_participants as $pid) {
           e.preventDefault();
           this.parentElement.remove();
           if (addedContainer.children.length === 0) {
+=======
+        // Cek duplicate berdasarkan hidden input value (ID)
+        const existingInputs = addedContainer.querySelectorAll('input[name="peserta[]"]');
+        let exists = false;
+        existingInputs.forEach(inp => {
+          if (inp.value === val) exists = true;
+        });
+
+        if (!exists) {
+          const div = document.createElement('div');
+          div.className = 'added-item';
+
+          const textNode = document.createTextNode(label + ' ');
+          div.appendChild(textNode);
+
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'peserta[]';
+          hidden.value = val;
+          div.appendChild(hidden);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn btn-sm btn-outline-danger remove-btn';
+          btn.textContent = 'hapus';
+          div.appendChild(btn);
+
+
+          addedContainer.appendChild(div);
+        }
+        cb.checked = false; // Uncheck setelah ditambah
+      });
+
+      selectAll.checked = false;
+      attachRemoveEvent();
+    });
+
+    function attachRemoveEvent() {
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.onclick = function() {
+          const parent = this.parentElement;
+          parent.remove();
+          // cek apakah masih ada .added-item tersisa
+          if (addedContainer.querySelectorAll('.added-item').length === 0) {
+>>>>>>> 58511082e59edfd8e666deedb9cc6095e8ab71f6
             addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
           }
         });
