@@ -131,7 +131,7 @@ if (trim($peserta_raw) !== '') {
         <div class="offcanvas-body p-0">
             <div class="sidebar-content d-flex flex-column justify-content-between h-100">
                 <div>
-                    <h5 class="fw-bold mb-4 ms-3">Menu</h5>
+                    <h4 class="fw-bold mb-4 ms-3">MENU</h4>
                     <ul class="nav flex-column">
                         <li><a class="nav-link active" href="dashboard_admin.php"><i
                                     class="bi bi-grid me-2"></i>Dashboard</a></li>
@@ -153,7 +153,7 @@ if (trim($peserta_raw) !== '') {
     <!-- Sidebar -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
-            <h5 class="fw-bold mb-4 ms-3">Menu</h5>
+            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
             <ul class="nav flex-column">
                 <li><a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
