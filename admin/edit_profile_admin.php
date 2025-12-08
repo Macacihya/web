@@ -221,7 +221,7 @@ if ($updated === 1) {
         <div class="offcanvas-body p-0">
             <div class="sidebar-content d-flex flex-column justify-content-between h-100">
                 <div>
-                    <h5 class="fw-bold mb-4 ms-3">Menu</h5>
+                    <h4 class="fw-bold mb-4 ms-3">MENU</h4>
                     <ul class="nav flex-column">
                         <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
                         <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
@@ -239,7 +239,7 @@ if ($updated === 1) {
     <!-- sidebar desktop -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
-            <h5 class="fw-bold mb-4 ms-3">Menu</h5>
+            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
             <ul class="nav flex-column">
                 <li><a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
                 <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a></li>
