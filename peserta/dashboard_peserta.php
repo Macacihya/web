@@ -41,7 +41,11 @@ if ($result) {
             background-color: #faf8f5;
             font-family: "Poppins", sans-serif;
         }
-
+        .sidebar {
+            height: 100vh !important;
+            display: flex;
+            flex-direction: column;
+        }
         .sidebar-content {
             min-width: 250px;
             background: #fff;
@@ -180,6 +184,14 @@ if ($result) {
             background: #fff;
             height: 46px;
             box-shadow: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center; /* Posisi panah */
+            background-size: 16px 12px;
+            padding-right: 2.5rem !important; /
         }
 
         .table-header .controls .search-table input.form-control {
@@ -201,12 +213,14 @@ if ($result) {
 </head>
 
 <body>
+
     <nav class="navbar navbar-light bg-white sticky-top px-3">
         <button class="btn btn-outline-success d-lg-none" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
             <i class="bi bi-list"></i>
         </button>
     </nav>
+<!-- Mobile -->
     <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas"
         aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-body p-0">
@@ -222,18 +236,16 @@ if ($result) {
                             <a class="nav-link" href="profile_peserta.php"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
+                        <li>
+                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                        </li>
                     </ul>
-                </div>
-
-                <div class="text-center mt-4">
-                    <button id="logoutBtnMobile" class="btn logout-btn px-4 py-2">
-                        <i class="bi bi-box-arrow-right me-2"></i>Logout
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+<!-- Desktop -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
             <h4 class="fw-bold mb-4 ms-3">MENU</h4>
@@ -241,16 +253,14 @@ if ($result) {
                 <li>
                     <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
+            </ul>
+            <ul class="nav flex-column mt-auto">
                 <li>
                     <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
+                  <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                </li>
             </ul>
-        </div>
-
-        <div class="text-center">
-            <button id="logoutBtn" class="btn logout-btn px-4 py-2">
-                <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </button>
         </div>
     </div>
 
