@@ -4,6 +4,7 @@ session_start();
 
 // Sertakan file koneksi database ($conn diasumsikan tersedia)
 require_once __DIR__ . '/../koneksi.php';
+error_reporting(0); // Suppress errors to allow JSON response
 
 // Pastikan request menggunakan metode POST — endpoint ini hanya menerima POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -25,8 +26,8 @@ if ($judul === '' || $tanggal === '' || $isi === '') {
 }
 
 // ---------- Handle file upload (optional) ----------
-// Variabel untuk menyimpan nama file yang diunggah (jika ada)
-$uploadedFileName = null;
+// Variabel untuk menyimpan nama file (defaults to empty string because DB requires NOT NULL)
+$uploadedFileName = '';
 if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     // Ambil temporary file path dan nama file asli
     $tmp = $_FILES['file']['tmp_name'];
@@ -37,7 +38,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     $dest = __DIR__ . '/../file/' . $safeName;
     // Pindahkan file dari temp ke tujuan
     if (move_uploaded_file($tmp, $dest)) {
-        $uploadedFileName = $safeName; // simpan nama file untuk disimpan di DB
+        $uploadedFileName = $safeName;
     } else {
         // Jika gagal memindahkan file, kembalikan error ke client
         echo json_encode(['success' => false, 'message' => 'Gagal mengunggah file']);
@@ -52,7 +53,7 @@ if (is_array($peserta_ids) && count($peserta_ids) > 0) {
     // Konversi setiap value ke integer untuk mencegah injeksi
     $clean = array_map('intval', $peserta_ids);
     // Buang nilai yang bukan positif
-    $clean = array_filter($clean, fn($v) => $v > 0);
+    $clean = array_filter($clean, function($v) { return $v > 0; });
     // Gabungkan menjadi string CSV (mis. "1,2,3")
     $peserta_csv = implode(',', $clean);
 } else {
@@ -68,13 +69,25 @@ if (is_array($peserta_ids) && count($peserta_ids) > 0) {
     $peserta_csv = implode(',', $allIds);
 }
 
+// Ensure data limits match database schema to prevent errors
+// title varchar(50), peserta varchar(255)
+if (strlen($judul) > 50) {
+    $judul = substr($judul, 0, 50);
+}
+if (strlen($peserta_csv) > 255) {
+    // If we have too many participants, we cannot save properly with current schema.
+    // Return error instead of crashing or truncating corrupt data.
+    echo json_encode(['success' => false, 'message' => 'Terlalu banyak peserta (max karakter 255). Hubungi admin untuk upgrade sistem.']);
+    exit;
+}
+
 // ---------- Insert notulen ----------
 // Siapa yang membuat notulen — ambil dari session (jika tersedia), fallback 'Admin'
 $created_by = $_SESSION['user_name'] ?? 'Admin';
 
-// Siapkan statement INSERT dengan prepared statement untuk menghindari SQL injection
+// Siapkan statement INSERT
+// Note: Lampiran is passed as $uploadedFileName (which is '' if none) because DB is NOT NULL
 $stmt = $conn->prepare("INSERT INTO tambah_notulen (judul_rapat, tanggal_rapat, isi_rapat, Lampiran, peserta, created_by) VALUES (?, ?, ?, ?, ?, ?)");
-// Bind parameter (semua string di sini)
 $stmt->bind_param('ssssss', $judul, $tanggal, $isi, $uploadedFileName, $peserta_csv, $created_by);
 
 // Eksekusi dan berikan respons JSON sesuai hasil
@@ -82,7 +95,7 @@ if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Notulen berhasil disimpan']);
 } else {
     // Jika gagal, kembalikan pesan error (berisi $stmt->error)
-    echo json_encode(['success' => false, 'message' => 'DB error: ' . $stmt->error]);
+    echo json_encode(['success' => false, 'message' => 'DB Error: ' . $stmt->error]);
 }
 exit;
 ?>

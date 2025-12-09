@@ -45,6 +45,24 @@ if ($result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/admin.min.css">
+    <style>
+        .mobile-card {
+            border: 1px solid #198754; /* Bootstrap success color */
+            transition: all 0.2s ease-in-out;
+            background-color: white; /* Ensure background is white */
+        }
+        .mobile-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+            /* Green border on hover to match */
+            border-color: #198754!important; 
+        }
+        @media (min-width: 768px) {
+            .border-start-md {
+                border-left: 1px solid #dee2e6 !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -68,8 +86,12 @@ if ($result) {
                         </li>
                         <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
                                 Pengguna</a></li>
-                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
-                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-auto px-3">
+                    <ul class="nav flex-column">
+                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
                     </ul>
                 </div>
 
@@ -90,11 +112,14 @@ if ($result) {
                 </li>
                 <li><a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
                         Pengguna</a></li>
-                <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
             </ul>
         </div>
 
-        <div class="text-center">
+        <div>
+            <ul class="nav flex-column mb-3">
+                 <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+            </ul>
+            <div class="text-center">
             <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i
                     class="bi bi-box-arrow-right me-2"></i>Logout</button>
         </div>
@@ -166,22 +191,9 @@ if ($result) {
             </div>
 
             <!-- Table -->
-                <!-- Mobile list container (rendered by JS) -->
-                <div id="mobileList" class="mobile-list d-block d-md-none"></div>
-                <div class="table-responsive d-none d-md-block">
-                <table class="table align-middle table-hover mb-0">
-                    <thead class="table-light border-0" style="background-color: #e8f6ee;">
-                        <tr class="text-success">
-                            <th scope="col">No</th>
-                            <th scope="col" class="text-start">Judul Rapat</th>
-                            <th scope="col">Tanggal</th>
-                            <th scope="col">Pembuat</th>
-                            <th scope="col" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
+            <!-- List Container -->
+            <!-- List Container -->
+            <div id="notulenList" class="row g-3"></div>
 
             <!-- Pagination & info -->
             <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
@@ -221,90 +233,57 @@ if ($result) {
             }
 
             function renderTable(data, startIndex = 0) {
-                tableBody.innerHTML = "";
-                const mobileList = document.getElementById('mobileList');
-                if (mobileList) mobileList.innerHTML = "";
+                const notulenList = document.getElementById("notulenList");
+                notulenList.innerHTML = "";
 
                 if (data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data notulen.</td></tr>`;
-                    if (mobileList) mobileList.innerHTML = `<div class="text-center text-muted py-4">Belum ada data notulen.</div>`;
+                    notulenList.innerHTML = `<div class="text-center text-muted py-4">Belum ada data notulen.</div>`;
                     return;
                 }
 
-                const isMobile = window.innerWidth < 768;
-
                 data.forEach((item, index) => {
                     const nomorUrut = startIndex + index + 1;
-
                     const judul = escapeHtml(item.judul_rapat || '');
                     const tanggal = escapeHtml(item.tanggal_rapat || '');
                     const pembuat = escapeHtml(item.created_by || 'Admin');
-                    
-                    // Basic logic for participant count (comma separated)
                     const pesertaCount = item.peserta ? item.peserta.split(',').length : 0;
 
-                    if (isMobile) {
-                        if (!mobileList) return;
-                        const card = document.createElement('div');
-                        card.style.cursor = 'pointer';
-                        card.onclick = (e) => {
-                            if (!e.target.closest('.btn') && !e.target.closest('a')) {
-                                window.location.href = `detail_rapat_admin.php?id=${encodeURIComponent(item.id)}`;
-                            }
-                        };
-                        card.className = 'mobile-card';
-                        card.innerHTML = `
-                            <div class="mobile-card-inner">
-                                <div class="mobile-card-header">
-                                    <div class="mobile-status-badge">Final</div>
-                                    <div class="mobile-card-actions">
-
-                                        <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-success" title="Edit"><i class="bi bi-pencil"></i></a>
-                                        <a href="#" class="btn btn-sm text-muted" title="Download"><i class="bi bi-download"></i></a>
-                                        <button class="btn btn-sm text-danger btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash"></i></button>
-                                    </div>
+                    const card = document.createElement('div');
+                    card.className = 'col-md-6'; // Grid column
+                    
+                    card.innerHTML = `
+                        <div class="mobile-card h-100 p-3 rounded-3 position-relative shadow-sm" style="cursor: pointer;" onclick="if(!event.target.closest('a') && !event.target.closest('button')) window.location.href='detail_rapat_admin.php?id=${encodeURIComponent(item.id)}'">
+                            
+                            <!-- Header: Actions (Badge removed) -->
+                            <div class="d-flex justify-content-end align-items-center mb-2">
+                                    <div class="d-flex gap-2">
+                                     <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-dark p-0" title="Edit"><i class="bi bi-pencil-square fs-5"></i></a>
+                                    <button class="btn btn-sm text-secondary p-0 btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash fs-5"></i></button>
                                 </div>
-                                <div class="mobile-card-scroll">
-                                    <div class="mobile-card-title">${judul}</div>
-                                    <div class="mobile-card-info">
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-calendar-event"></i>
-                                            <span>${tanggal} • 09:00</span>
-                                        </div>
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-person"></i>
-                                            <span>PIC: ${pembuat}</span>
-                                        </div>
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-people"></i>
-                                            <span>${pesertaCount} Peserta</span>
-                                        </div>
+                            </div>
+
+                            <!-- Body: Title & Metadata -->
+                            <div>
+                                <h5 class="fw-bold text-dark mb-3 text-truncate" title="${judul}">${judul}</h5>
+                                
+                                <div class="d-flex flex-column gap-2 text-secondary small">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span>${tanggal} • 09:00</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-person"></i>
+                                        <span class="text-truncate" style="max-width: 200px;">PIC: ${pembuat}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-people"></i>
+                                        <span>${pesertaCount} Peserta</span>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                        mobileList.appendChild(card);
-                    } else {
-                        const tr = document.createElement("tr");
-                        tr.style.cursor = "pointer";
-                        tr.onclick = (e) => {
-                            if (!e.target.closest('.btn') && !e.target.closest('a')) {
-                                window.location.href = `detail_rapat_admin.php?id=${encodeURIComponent(item.id)}`;
-                            }
-                        };
-                        tr.innerHTML = `
-                            <td>${nomorUrut}</td>
-                            <td class="text-start">${judul}</td>
-                            <td>${tanggal}</td>
-                            <td>${pembuat}</td>
-                            <td class="text-center">
-
-                                <a href="edit_rapat_admin.php?id=${encodeURIComponent(item.id)}" class="btn btn-sm text-success" title="Edit"><i class="bi bi-pencil"></i></a>
-                                <button class="btn btn-sm text-danger btn-delete" data-id="${encodeURIComponent(item.id)}" title="Hapus"><i class="bi bi-trash"></i></button>
-                            </td>
-                        `;
-                        tableBody.appendChild(tr);
-                    }
+                        </div>
+                    `;
+                    notulenList.appendChild(card);
                 });
             }
 
@@ -354,8 +333,9 @@ if ($result) {
                         e.preventDefault();
                         currentPage = i;
                         updateTable();
+                        const notulenList = document.getElementById("notulenList");
                         window.scrollTo({
-                            top: tableBody.getBoundingClientRect().top + window.scrollY - 100,
+                            top: notulenList.getBoundingClientRect().top + window.scrollY - 100,
                             behavior: "smooth"
                         });
                     });

@@ -202,6 +202,23 @@ if ($result) {
                 width: 100% !important;
             }
         }
+
+        .mobile-card {
+            border: 1px solid #198754; /* Bootstrap success color */
+            transition: all 0.2s ease-in-out;
+            background-color: white; /* Ensure background is white */
+        }
+        .mobile-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+            /* Green border on hover to match */
+            border-color: #198754!important; 
+        }
+        @media (min-width: 768px) {
+            .border-start-md {
+                border-left: 1px solid #dee2e6 !important;
+            }
+        }
     </style>
 </head>
 
@@ -216,13 +233,15 @@ if ($result) {
         aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-body p-0">
             <div class="sidebar-content d-flex flex-column justify-content-between h-100">
-                <div>
-                    <h4 class="fw-bold mb-4 ms-3">MENU</h4>
-                    <ul class="nav flex-column">
                         <li>
                             <a class="nav-link active" href="dashboard_peserta.php"><i
                                     class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-auto px-3">
+                    <ul class="nav flex-column">
                         <li>
                             <a class="nav-link" href="profile_peserta.php"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a>
@@ -240,19 +259,19 @@ if ($result) {
     </div>
 
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
-        <div>
-            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
-            <ul class="nav flex-column">
                 <li>
                     <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
             </ul>
         </div>
 
-        <div class="text-center">
+        <div>
+            <ul class="nav flex-column mb-3">
+                <li>
+                    <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                </li>
+            </ul>
+            <div class="text-center">
             <button id="logoutBtn" class="btn logout-btn px-4 py-2">
                 <i class="bi bi-box-arrow-right me-2"></i>Logout
             </button>
@@ -317,22 +336,8 @@ if ($result) {
                 </div>
             </div>
 
-                <!-- Mobile list container (rendered by JS) -->
-                <div id="mobileList" class="mobile-list d-block d-md-none"></div>
-                <div class="table-responsive d-none d-md-block">
-                <table class="table align-middle table-hover mb-0">
-                    <thead class="table-light border-0" style="background-color: #e8f6ee;">
-                        <tr class="text-success">
-                            <th scope="col">No</th>
-                            <th scope="col" class="text-start">Judul Rapat</th>
-                            <th scope="col">Tanggal</th>
-                            <th scope="col">Pembuat</th>
-                            <th scope="col" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
+                <!-- List Container -->
+                <div id="notulenList" class="row g-3"></div>
 
             <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
                 <small class="text-muted" id="dataInfo"></small>
@@ -363,86 +368,56 @@ if ($result) {
             }
 
             function renderTable(data, startIndex = 0) {
-                tableBody.innerHTML = "";
-                const mobileList = document.getElementById('mobileList');
-                if (mobileList) mobileList.innerHTML = "";
+                const notulenList = document.getElementById("notulenList");
+                notulenList.innerHTML = "";
 
                 if (data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data notulen.</td></tr>`;
-                    if (mobileList) mobileList.innerHTML = `<div class="text-center text-muted py-4">Tidak ada data notulen.</div>`;
+                    notulenList.innerHTML = `<div class="text-center text-muted py-4">Tidak ada data notulen.</div>`;
                     return;
                 }
 
-                const isMobile = window.innerWidth < 768;
-
                 data.forEach((item, index) => {
-                    const nomorUrut = startIndex + index + 1;
                     const judul = escapeHtml(item.judul_rapat || '');
                     const tanggal = escapeHtml(item.tanggal_rapat || '');
                     const pembuat = escapeHtml(item.created_by || 'Admin');
-                    
-                    // Basic logic for participant count (comma separated)
                     const pesertaCount = item.peserta ? item.peserta.split(',').length : 0;
 
-                    if (isMobile) {
-                        if (!mobileList) return;
-                        const card = document.createElement('div');
-                        card.className = 'mobile-card';
-                        card.style.cursor = 'pointer';
-                        card.onclick = (e) => {
-                            if (!e.target.closest('a') && !e.target.closest('.btn')) {
-                                window.location.href = `detail_rapat_peserta.php?id=${encodeURIComponent(item.id)}`;
-                            }
-                        };
-                        
-                        // Match Admin Style
-                        card.innerHTML = `
-                            <div class="mobile-card-inner">
-                                <div class="mobile-card-header">
-                                    <div class="mobile-status-badge">Final</div>
-                                    <div class="mobile-card-actions">
-                                        ${item.Lampiran ? `<a href="../file/${encodeURIComponent(item.Lampiran)}" class="btn btn-sm text-success" title="Download" download><i class="bi bi-download"></i></a>` : ''}
-                                    </div>
+                    const card = document.createElement('div');
+                    card.className = 'col-md-6'; // Grid column
+                    
+                    // Match Admin Style (Grid Layout)
+                    card.innerHTML = `
+                        <div class="mobile-card h-100 p-3 rounded-3 position-relative shadow-sm" style="cursor: pointer;" onclick="if(!event.target.closest('a') && !event.target.closest('button')) window.location.href='detail_rapat_peserta.php?id=${encodeURIComponent(item.id)}'">
+                            
+                            <!-- Header: Actions (Badge removed) -->
+                            <div class="d-flex justify-content-end align-items-center mb-2">
+                                <div class="d-flex gap-2">
+                                    ${item.Lampiran ? `<a href="../file/${encodeURIComponent(item.Lampiran)}" class="btn btn-sm text-secondary p-0" title="Download" download><i class="bi bi-download fs-5"></i></a>` : ''}
                                 </div>
-                                <div class="mobile-card-scroll">
-                                    <div class="mobile-card-title">${judul}</div>
-                                    <div class="mobile-card-info">
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-calendar-event"></i>
-                                            <span>${tanggal}</span>
-                                        </div>
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-person"></i>
-                                            <span>PIC: ${pembuat}</span>
-                                        </div>
-                                        <div class="mobile-card-info-row">
-                                            <i class="bi bi-people"></i>
-                                            <span>${pesertaCount} Peserta</span>
-                                        </div>
+                            </div>
+
+                            <!-- Body: Title & Metadata -->
+                            <div>
+                                <h5 class="fw-bold text-dark mb-3 text-truncate" title="${judul}">${judul}</h5>
+                                
+                                <div class="d-flex flex-column gap-2 text-secondary small">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span>${tanggal}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-person"></i>
+                                        <span class="text-truncate" style="max-width: 200px;">PIC: ${pembuat}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-people"></i>
+                                        <span>${pesertaCount} Peserta</span>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                        mobileList.appendChild(card);
-                    } else {
-                        const tr = document.createElement("tr");
-                        tr.style.cursor = "pointer";
-                        tr.onclick = (e) => {
-                            if (!e.target.closest('a') && !e.target.closest('.btn')) {
-                                window.location.href = `detail_rapat_peserta.php?id=${encodeURIComponent(item.id)}`;
-                            }
-                        };
-                        tr.innerHTML = `
-                            <td>${nomorUrut}</td>
-                            <td class="text-start">${judul}</td>
-                            <td>${tanggal}</td>
-                            <td>${pembuat}</td>
-                            <td class="text-center">
-                                ${item.Lampiran ? `<a href="../file/${encodeURIComponent(item.Lampiran)}" class="btn btn-sm text-success ms-2" title="Download" download><i class="bi bi-download"></i></a>` : ''}
-                            </td>
-                        `;
-                        tableBody.appendChild(tr);
-                    }
+                        </div>
+                    `;
+                    notulenList.appendChild(card);
                 });
             }
 
@@ -497,6 +472,11 @@ if ($result) {
                         e.preventDefault();
                         currentPage = i;
                         updateTable();
+                        const notulenList = document.getElementById("notulenList");
+                        window.scrollTo({
+                            top: notulenList.getBoundingClientRect().top + window.scrollY - 100,
+                            behavior: "smooth"
+                        });
                     });
                     pagination.appendChild(li);
                 }

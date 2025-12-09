@@ -106,13 +106,35 @@ foreach ($current_participants as $pid) {
   </div>
 
   <!-- Main Content -->
-  <div class="main-content">
-    <div class="topbar"><span>Halo, Admin 👋</span></div>
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div></div>
+            <div class="profile"><span>Halo, Admin 👋</span></div>
+        </div>
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="dashboard_admin.php">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Notulen</li>
+            </ol>
+        </nav>
 
     <div class="form-wrapper">
       <h5 class="fw-semibold mb-4">Edit Notulen</h5>
 
-      <form action="../proses/proses_edit_notulen.php" method="post" enctype="multipart/form-data" id="editForm">
+      <!-- Success Toast Container -->
+      <div class="toast-container position-fixed top-0 end-0 p-3">
+          <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="d-flex">
+                  <div class="toast-body">
+                      <i class="bi bi-check-circle-fill me-2"></i> Notulen berhasil diperbarui!
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+          </div>
+      </div>
+
+      <form id="editForm" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= $id_notulen ?>">
 
         <div class="mb-3">
@@ -156,8 +178,6 @@ foreach ($current_participants as $pid) {
                 <small class="text-muted">Belum ada file terlampir.</small>
               <?php endif; ?>
             </div>
-            <small class="text-muted d-block mt-1">File saat ini: <a href="../file/<?= $notulen['Lampiran'] ?>"
-                target="_blank"><?= $notulen['Lampiran'] ?></a></small>
           <?php else: ?>
             <small class="text-muted d-block mt-1">Belum ada file terlampir.</small>
           <?php endif; ?>
@@ -166,7 +186,7 @@ foreach ($current_participants as $pid) {
         <!-- Dropdown Peserta -->
         <div class="mb-3">
           <label class="form-label">Peserta Notulen</label>
-          <div class="dropdown w-50" data-bs-auto-close="false">
+          <div class="dropdown w-100" data-bs-auto-close="false">
             <button class="btn btn-save w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               Pilih Peserta
@@ -214,7 +234,7 @@ foreach ($current_participants as $pid) {
             <div id="addedContainer">
               <!-- Pre-fill participants -->
               <?php foreach ($current_participant_items as $item): ?>
-                <div class="added-item d-flex align-items-center gap-2 mb-2">
+                <div class="added-item d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded">
                   <span class="flex-grow-1"><?= htmlspecialchars($item['nama']) ?></span>
                   <input type="hidden" name="peserta[]" value="<?= htmlspecialchars($item['id']) ?>">
                   <button type="button" class="btn btn-sm btn-outline-danger remove-btn">Hapus</button>
@@ -235,21 +255,76 @@ foreach ($current_participants as $pid) {
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
     // === TINYMCE INITIALIZATION ===
     tinymce.init({
       selector: '#isi',
       height: 350,
-      menubar: 'edit view insert format tools table help',
-      plugins: [
-        "advlist", "anchor", "autolink", "charmap", "code", "fullscreen",
-        "help", "image", "insertdatetime", "link", "lists", "media",
-        "preview", "searchreplace", "table", "visualblocks", "wordcount"
-      ],
-      toolbar: "undo redo | styles | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+      menubar: false,
+      api_key: 'cl3yw8j9ej8nes9mctfudi2r0jysibdrbn3y932667p04jg5',
+      plugins: "lists link table code",
+      toolbar: "undo redo | bold italic underline | bullist numlist | link",
     });
 
     document.addEventListener("DOMContentLoaded", function() {
+        /* =======================
+           FORM SUBMIT AJAX
+        ======================= */
+        document.getElementById("editForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            try {
+                // Sync TinyMCE content
+                if (typeof tinymce !== 'undefined' && tinymce.get("isi")) {
+                    tinymce.triggerSave();
+                }
+
+                const fd = new FormData(this);
+                // Peserta input type hidden already in form, formData picks them up automatically
+
+                const res = await fetch("../proses/proses_edit_notulen.php", {
+                    method: "POST",
+                    body: fd
+                });
+
+                const text = await res.text();
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch (err) {
+                    console.error("Invalid JSON:", text);
+                    alert("Terjadi kesalahan server: " + text.substring(0, 100));
+                    return;
+                }
+
+                if (json.success) {
+                    // Show Toast
+                    const toastEl = document.getElementById('successToast');
+                    if (toastEl && window.bootstrap) {
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    } else {
+                        alert("Notulen berhasil diperbarui!");
+                    }
+
+                    // Disable button
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    if(submitBtn) submitBtn.disabled = true;
+
+                    setTimeout(() => {
+                        window.location.href = 'dashboard_admin.php';
+                    }, 1500);
+                } else {
+                    alert(json.message || "Gagal menyimpan data.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Terjadi kesalahan: " + error.message);
+            }
+        });
+
         // Logout handlers
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
@@ -274,14 +349,12 @@ foreach ($current_participants as $pid) {
         
         // Helper function untuk escape HTML
         function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
         
         const searchInput = document.getElementById('searchInput');
@@ -325,6 +398,7 @@ foreach ($current_participants as $pid) {
                 const selected = document.querySelectorAll('.notulen-checkbox:checked');
                 
                 if (selected.length === 0) {
+                    alert('Pilih minimal 1 peserta');
                     return;
                 }
 
@@ -356,7 +430,7 @@ foreach ($current_participants as $pid) {
                     if (existingIds.has(id)) return;
 
                     const div = document.createElement('div');
-                    div.className = 'added-item d-flex align-items-center gap-2 mb-2';
+                    div.className = 'added-item d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded';
                     div.innerHTML = `
                         <span class="flex-grow-1">${escapeHtml(name)}</span>
                         <input type="hidden" name="peserta[]" value="${escapeHtml(id)}">
@@ -369,32 +443,28 @@ foreach ($current_participants as $pid) {
                 });
 
                 if (selectAll) selectAll.checked = false;
-                attachRemoveEvent();
+                // Re-bind remove events for new items (or delegate)
+                // Since simpler, we can delegate on container (but I'll keep the function approach for now or use delegation)
             });
-        }
-
-        function attachRemoveEvent() {
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                // Remove existing listeners to avoid duplicates (though simple onclick replacement works too)
-                btn.onclick = function(e) {
+             
+             // Event delegation for remove buttons (handles both existing and new items)
+             addedContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-btn') || e.target.closest('.remove-btn')) {
                     e.preventDefault();
-                    const parent = this.closest('.added-item'); // Use closest to be safe
-                    if (parent) parent.remove();
+                    const btn = e.target.classList.contains('remove-btn') ? e.target : e.target.closest('.remove-btn');
+                    const item = btn.closest('.added-item');
+                    if (item) item.remove();
                     
-                    // cek apakah masih ada .added-item tersisa
                     if (addedContainer.querySelectorAll('.added-item').length === 0) {
                         addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
                     }
-                };
-            });
+                }
+             });
         }
-
-        // Attach event on load for existing items
-        attachRemoveEvent();
     });
-  </script>
 
+    // Handle pre-existing remove buttons (if any hardcoded) - Delegation above handles it
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

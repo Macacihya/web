@@ -104,7 +104,17 @@ if ($q) {
         <div class="form-section">
             <h5 class="fw-semibold mb-4">Tambah Notulen</h5>
 
-            <div id="alertBox" class="alert alert-success" style="display:none;">Notulen berhasil disimpan!</div>
+            <!-- Success Toast Container -->
+            <div class="toast-container position-fixed top-0 end-0 p-3">
+                <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi bi-check-circle-fill me-2"></i> Notulen berhasil disimpan!
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
 
             <form id="notulenForm" method="POST" enctype="multipart/form-data">
                 
@@ -170,7 +180,7 @@ if ($q) {
                             <li class="px-3 py-2">
                                 <div class="d-flex justify-content-between gap-2">
                                     <button type="button" id="clearSearchBtn" class="btn btn-light btn-sm flex-grow-1">Reset</button>
-                                    <button type="button" id="addButton" class="btn btn-success btn-sm flex-grow-1">Tambah</button>
+                                    <button type="button" id="addButton" class="btn btn-success btn-sm flex-grow-1" style="background-color: #198754; border-color: #198754;">Tambah</button>
                                 </div>
                             </li>
                         </ul>
@@ -214,32 +224,59 @@ tinymce.init({
 ======================= */
 document.getElementById("notulenForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+    
+    try {
+        // Sync TinyMCE content to textarea before creating FormData
+        if (typeof tinymce !== 'undefined' && tinymce.get("isi")) {
+            tinymce.triggerSave();
+        }
 
-    const fd = new FormData(this);
+        const fd = new FormData(this);
 
-    // Ambil peserta
-    document.querySelectorAll('.added-item').forEach(item => {
-        fd.append("peserta[]", item.dataset.id);
-    });
+        // Ambil peserta
+        document.querySelectorAll('.added-item').forEach(item => {
+            fd.append("peserta[]", item.dataset.id);
+        });
 
-    const res = await fetch("../proses/proses_simpan_notulen.php", {
-        method: "POST",
-        body: fd
-    });
+        const res = await fetch("../proses/proses_simpan_notulen.php", {
+            method: "POST",
+            body: fd
+        });
 
-    const json = await res.json();
+        const text = await res.text(); // Get raw text first to debug
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (err) {
+            console.error("Invalid JSON:", text);
+            alert("Terjadi kesalahan server: " + text.substring(0, 100));
+            return;
+        }
 
-    if (json.success) {
-        const alertBox = document.getElementById("alertBox");
-        alertBox.style.display = "block";
-        alertBox.textContent = json.message;
+        if (json.success) {
+            // Show Toast
+            const toastEl = document.getElementById('successToast');
+            if (toastEl && window.bootstrap) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            } else {
+                // Fallback if toast fails
+                alert("Notulen berhasil disimpan!");
+            }
 
-        setTimeout(() => {
-            alertBox.style.display = "none";
-            location.reload();
-        }, 1500);
-    } else {
-        alert(json.message);
+            // Disable button to prevent double submit
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if(submitBtn) submitBtn.disabled = true;
+
+            setTimeout(() => {
+                location.href = 'dashboard_admin.php'; // Redirect to dashboard or reload
+            }, 1000);
+        } else {
+            alert(json.message || "Gagal menyimpan data.");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Terjadi kesalahan: " + error.message);
     }
 });
 
