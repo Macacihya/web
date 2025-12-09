@@ -18,6 +18,11 @@ $userData = $userRes->fetch_assoc();
 $stmt->close();
 $userName = $userData['nama'] ?? 'Admin';
 
+// Initialize viewed notulen session if not exists
+if (!isset($_SESSION['viewed_notulen'])) {
+    $_SESSION['viewed_notulen'] = [];
+}
+
 // Ambil 10 notulen terbaru
 $sql = "SELECT id, judul_rapat, tanggal_rapat, Lampiran, peserta, created_by, created_at FROM tambah_notulen ORDER BY created_at DESC LIMIT 10";
 $result = $conn->query($sql);
@@ -110,13 +115,20 @@ if ($result) {
             // Ambil 3 notulen terbaru untuk highlight
             $top3 = array_slice($notulens, 0, 3);
             foreach ($top3 as $highlight):
+                $id = (int) ($highlight['id'] ?? 0);
+                $isViewed = in_array($id, $_SESSION['viewed_notulen']);
                 ?>
                 <div class="col-md-4">
-                    <div class="highlight-card h-100">
-                        <span class="text-muted"><?= date('d/m/Y', strtotime($highlight['tanggal_rapat'])) ?></span>
-                        <h6 class="mt-1 mb-1"><?= htmlspecialchars($highlight['judul_rapat']) ?></h6>
-                        <p class="text-truncate">Dibuat oleh: <?= htmlspecialchars($highlight['created_by'] ?? 'Admin') ?></p>
-                    </div>
+                    <a href="detail_rapat_admin.php?id=<?php echo $id ?>" class="text-decoration-none text-reset">
+                        <div class="highlight-card h-100 position-relative">
+                            <?php if (!$isViewed): ?>
+                                <span class="badge bg-success position-absolute top-0 end-0 m-2">Baru</span>
+                            <?php endif; ?>
+                            <span class="text-muted"><?php echo date('d/m/Y', strtotime($highlight['tanggal_rapat'])) ?><?php if (!empty($highlight['created_at'])) echo ' • ' . date('H:i', strtotime($highlight['created_at'])); ?></span>
+                            <h6 class="mt-1 mb-1"><?php echo htmlspecialchars($highlight['judul_rapat']) ?></h6>
+                            <p class="text-truncate">Dibuat oleh: <?php echo htmlspecialchars($highlight['created_by'] ?? 'Admin') ?></p>
+                        </div>
+                    </a>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -439,6 +451,26 @@ if ($result) {
             });
 
             setupLogoutButtons();
+
+            // Handle highlight card clicks to mark as viewed
+            document.querySelectorAll('.highlight-card').forEach(card => {
+                const link = card.closest('a');
+                if (link) {
+                    link.addEventListener('click', function(e) {
+                        const href = this.getAttribute('href');
+                        const urlParams = new URLSearchParams(new URL(href, window.location.origin).search);
+                        const id = urlParams.get('id');
+                        
+                        if (id) {
+                            fetch('../proses/proses_mark_viewed.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: id })
+                            }).catch(err => console.error('Error marking as viewed:', err));
+                        }
+                    });
+                }
+            });
         });
     </script>
 </body>
