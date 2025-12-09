@@ -210,9 +210,10 @@ if ($result) {
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
+            background-repeat: no-repeat;
             background-position: right 0.75rem center; /* Posisi panah */
             background-size: 16px 12px;
-            padding-right: 2.5rem !important; /
+            padding-right: 2.5rem !important; 
         }
 
         .table-header .controls .search-table input.form-control {
@@ -258,11 +259,15 @@ if ($result) {
             <i class="bi bi-list"></i>
         </button>
     </nav>
-<!-- Mobile -->
+
+    <!-- Sidebar Mobile -->
     <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas"
         aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-body p-0">
             <div class="sidebar-content d-flex flex-column justify-content-between h-100">
+                <div>
+                    <h4 class="fw-bold mb-4 ms-3">MENU</h4>
+                    <ul class="nav flex-column">
                         <li>
                             <a class="nav-link active" href="dashboard_peserta.php"><i
                                     class="bi bi-grid me-2"></i>Dashboard</a>
@@ -271,7 +276,7 @@ if ($result) {
                 </div>
                 
                 <div class="mt-auto px-3">
-                    <ul class="nav flex-column">
+                    <ul class="nav flex-column mb-3">
                         <li>
                             <a class="nav-link" href="profile_peserta.php"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a>
@@ -285,12 +290,14 @@ if ($result) {
         </div>
     </div>
 
-<!-- Desktop -->
+    <!-- Sidebar Desktop -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
+        <div>
+            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
+            <ul class="nav flex-column">
                 <li>
                     <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
-<<<<<<< HEAD
             </ul>
         </div>
 
@@ -299,24 +306,13 @@ if ($result) {
                 <li>
                     <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
-            </ul>
-            <div class="text-center">
-            <button id="logoutBtn" class="btn logout-btn px-4 py-2">
-                <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </button>
-        </div>
-=======
-            </ul>
-            <ul class="nav flex-column mt-auto">
                 <li>
-                    <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
-                </li>
-                  <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
                 </li>
             </ul>
         </div>
->>>>>>> 113bf630acfd33def2c4aef1b930991629a41cf3
     </div>
+
 
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">

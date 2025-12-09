@@ -130,7 +130,8 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
             <i class="bi bi-list"></i>
         </button>
     </nav>
-    <!-- sidebar moblie -->
+    
+    <!-- Sidebar Mobile -->
     <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas"
         aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-body p-0">
@@ -139,12 +140,15 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
                     <h4 class="fw-bold mb-4 ms-3">MENU</h4>
                     <ul class="nav flex-column">
                         <li>
-                            <a class="nav-link active" href="dashboard_peserta.php"><i
-                                    class="bi bi-grid me-2"></i>Dashboard</a>
+                            <a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
+                    </ul>
+                </div>
+
+                <div class="mt-auto px-3">
+                    <ul class="nav flex-column mb-3">
                         <li>
-                            <a class="nav-link" href="profile_peserta.php"><i
-                                    class="bi bi-person-circle me-2"></i>Profile</a>
+                            <a class="nav-link active" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                         <li>
                             <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
@@ -155,22 +159,24 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
         </div>
     </div>
 
-
-
-    <!-- Dekstop-->
+    <!-- Sidebar Desktop -->
     <div class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
             <h4 class="fw-bold mb-4 ms-3">MENU</h4>
             <ul class="nav flex-column">
                <li>
-                    <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
+                    <a class="nav-link" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
             </ul>
-            <ul class="nav flex-column mt-auto">
+        </div>
+
+        <div>
+            <ul class="nav flex-column mb-3">
                 <li>
-                    <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                    <a class="nav-link active" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
-                  <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                <li>
+                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
                 </li>
             </ul>
         </div>

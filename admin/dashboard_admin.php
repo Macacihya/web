@@ -46,7 +46,6 @@ if ($result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/admin.min.css">
     <style>
-<<<<<<< HEAD
         .mobile-card {
             border: 1px solid #198754; /* Bootstrap success color */
             transition: all 0.2s ease-in-out;
@@ -63,7 +62,6 @@ if ($result) {
                 border-left: 1px solid #dee2e6 !important;
             }
         }
-=======
         /* Make offcanvas (mobile sidebar) wider and more usable on small screens */
         @media (max-width: 991.98px) {
             .offcanvas.offcanvas-start {
@@ -81,7 +79,6 @@ if ($result) {
         @media (min-width: 992px) {
             .sidebar-content { min-width: 250px; }
         }
->>>>>>> 113bf630acfd33def2c4aef1b930991629a41cf3
     </style>
 </head>
 
@@ -108,21 +105,17 @@ if ($result) {
                         <li>
                             <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
                                 Pengguna</a></li>
-<<<<<<< HEAD
                     </ul>
                 </div>
 
                 <div class="mt-auto px-3">
-                    <ul class="nav flex-column">
-                        <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
-=======
+                    <ul class="nav flex-column mb-3">
                         <li>
                             <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                         <li>
-                            <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
                         </li>
->>>>>>> 113bf630acfd33def2c4aef1b930991629a41cf3
                     </ul>
                 </div>
             </div>
@@ -140,27 +133,19 @@ if ($result) {
                 <li>
                     <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
                         Pengguna</a></li>
-<<<<<<< HEAD
             </ul>
         </div>
 
         <div>
             <ul class="nav flex-column mb-3">
-                 <li><a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
-            </ul>
-            <div class="text-center">
-            <button id="logoutBtn" class="btn logout-btn px-4 py-2"><i
-                    class="bi bi-box-arrow-right me-2"></i>Logout</button>
-        </div>
-=======
                 <li>
-                    <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                    <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
+                </li>
                 <li>
                     <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
                 </li>
             </ul>
         </div>
->>>>>>> 113bf630acfd33def2c4aef1b930991629a41cf3
     </aside>
 
     <!-- Main content -->
