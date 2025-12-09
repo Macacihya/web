@@ -47,12 +47,29 @@ if ($result) {
             font-family: "Poppins", sans-serif;
         }
 
+        /* Desktop sidebar width */
         .sidebar-content {
-            min-width: 250px;
             background: #fff;
             height: 100%;
             border-right: 1px solid #eee;
             padding: 1.5rem 1rem;
+        }
+
+        /* Apply min-width only on larger screens */
+        @media (min-width: 992px) {
+            .sidebar-content { min-width: 250px; }
+        }
+
+        /* Make offcanvas (mobile sidebar) wider and more usable on small screens */
+        @media (max-width: 991.98px) {
+            .offcanvas.offcanvas-start {
+                width: 320px !important;
+                max-width: 90% !important;
+            }
+            .offcanvas.offcanvas-start .sidebar-content {
+                min-width: 0 !important;
+                padding: 1.25rem !important;
+            }
         }
 
         .sidebar-content .nav-link {

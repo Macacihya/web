@@ -45,6 +45,25 @@ if ($result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/admin.min.css">
+    <style>
+        /* Make offcanvas (mobile sidebar) wider and more usable on small screens */
+        @media (max-width: 991.98px) {
+            .offcanvas.offcanvas-start {
+                width: 320px !important;
+                max-width: 90% !important;
+            }
+            /* Ensure sidebar content inside offcanvas uses full width and padding */
+            .offcanvas.offcanvas-start .sidebar-content {
+                min-width: 0 !important;
+                padding: 1.25rem !important;
+            }
+        }
+
+        /* Keep desktop layout unchanged: apply min-width only on large screens */
+        @media (min-width: 992px) {
+            .sidebar-content { min-width: 250px; }
+        }
+    </style>
 </head>
 
 <body>
