@@ -197,24 +197,35 @@ if ($result) {
             min-width: 0;
         }
 
-        .table-header .controls select.form-select,
+        .table-header .controls select.form-select {
+        border: 2px solid #198754; 
+        border-radius: 12px 12px 8px 8px; 
+        padding: 10px 12px;
+        background: #fff;
+        height: 46px;
+        box-shadow: none;
+        -webkit-appearance: menulist; 
+        -moz-appearance: menulist;
+        appearance: menulist;
+        background-image: none; 
+        padding-right: 24px;
+        padding-left: 8px;
+    } 
+        
         .table-header .controls input.form-control {
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            padding: 10px 12px;
-            background: #fff;
-            height: 46px;
-            box-shadow: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center; /* Posisi panah */
-            background-size: 16px 12px;
-            padding-right: 2.5rem !important; 
-        }
+        border: 2px solid #198754; 
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #fff;
+        height: 46px;
+        box-shadow: none;
+        background-image: none !important;
+        background-repeat: no-repeat !important;
+        padding-right: 12px !important; 
+        -webkit-appearance: none; 
+        -moz-appearance: none;
+        appearance: none;
+    }
 
         .table-header .controls .search-table input.form-control {
             height: 46px;
