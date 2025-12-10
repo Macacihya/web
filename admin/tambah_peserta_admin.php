@@ -10,13 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 // Ambil data user login
 require_once __DIR__ . '/../koneksi.php';
 $userId = (int) $_SESSION['user_id'];
-$stmt = $conn->prepare("SELECT nama FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT nama, foto FROM users WHERE id = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $userRes = $stmt->get_result();
 $userData = $userRes->fetch_assoc();
 $stmt->close();
 $userName = $userData['nama'] ?? 'Admin';
+$userPhoto = $userData['foto'] ?? null;
 
 // Ambil pesan dan kosongkan session supaya tidak tampil lagi setelah reload
 $success_msg = $_SESSION['success_message'] ?? '';
@@ -151,22 +152,29 @@ if ($error_msg)
             </ul>
         </div>
     </div>
-
+<!-- Main Content -->
         <div class="main-content">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold"><i class="bi bi-person-plus-fill me-2"></i>Tambah Pengguna Baru</h5>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end">
+                        <span class="d-block fw-medium text-dark">Halo, <?= htmlspecialchars($userName) ?> 👋</span>
+                    </div>
+                    <img src="<?= $userPhoto ? '../file/' . htmlspecialchars($userPhoto) : '../file/user.jpg' ?>"
+                         alt="Profile"
+                         class="rounded-circle shadow-sm"
+                         style="width: 45px; height: 45px; object-fit: cover; border: 2px solid #fff;"
+                         onerror="this.onerror=null;this.src='../file/user.jpg';">
+                </div>
+            </div>
+            
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="kelola_rapat_admin.php">Kelola Pengguna</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Tambah Pengguna</li>
                 </ol>
             </nav>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-semibold"><i class="bi bi-person-plus-fill me-2"></i>Tambah Pengguna Baru</h5>
-                <div class="profile">
-                    <span>Halo, <?= htmlspecialchars($userName) ?> 👋</span>
-                </div>
-            </div>
-
             <div class="form-section">
                 <div class="card shadow-sm border-success">
                     <div class="card-body">
