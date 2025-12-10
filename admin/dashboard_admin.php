@@ -131,8 +131,8 @@ while ($row = $result->fetch_assoc()) {
                             <a class="nav-link" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
                         <li>
-                            <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
-                                Pengguna</a></li>
+                            <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -142,7 +142,7 @@ while ($row = $result->fetch_assoc()) {
                             <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                         <li>
-                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Keluar</a>
                         </li>
                     </ul>
                 </div>
@@ -159,8 +159,8 @@ while ($row = $result->fetch_assoc()) {
                     <a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                 </li>
                 <li>
-                    <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola
-                        Pengguna</a></li>
+                    <a class="nav-link" href="kelola_rapat_admin.php"><i class="bi bi-people me-2"></i>Kelola Pengguna</a>
+                </li>
             </ul>
         </div>
 
@@ -170,7 +170,7 @@ while ($row = $result->fetch_assoc()) {
                     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
                 <li>
-                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Keluar</a>
                 </li>
             </ul>
         </div>
