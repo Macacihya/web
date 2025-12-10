@@ -100,19 +100,17 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
             padding: 0.3rem 0.7rem;
         }
 
-        .btn-edit {
-            background-color: #00c853;
-            color: white;
-            border: none;
-            border-radius: .5rem;
-            font-weight: 500;
-            transition: 0.2s;
+        .btn.btn-edit{
+            background-color: #00C853 !important; 
+            border-color: #00C853 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none !important;
         }
-
-        .btn-edit:hover {
-            background-color: #02913f;
+        .btn.btn-edit:hover, .btn.btn-edit:focus{
+            background-color: #02913f !important; 
+            border-color: #02913f !important;
         }
-
         .profile {
             display: flex;
             align-items: center;

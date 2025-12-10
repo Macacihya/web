@@ -76,7 +76,7 @@ if ($q) {
         }
         .btn.btn-back:hover, .btn.btn-back:focus{
           background-color: #02913f !important; 
-            border-color: #02913f !important;
+          border-color: #02913f !important;
         }
     </style>
 </head>

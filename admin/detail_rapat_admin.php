@@ -122,6 +122,17 @@ if (trim($peserta_raw) !== '') {
             font-size: 14px;
             color: #2d6a4f;
         }
+        .btn.btn-back{
+          background-color: #00C853 !important; 
+          border-color: #00C853 !important;
+          color: #ffffff !important;
+          font-weight: bold;
+          text-decoration: none !important;
+        }
+        .btn.btn-back:hover, .btn.btn-back:focus{
+          background-color: #02913f !important; 
+          border-color: #02913f !important;
+        }
     </style>
 </head>
 
@@ -245,8 +256,7 @@ if (trim($peserta_raw) !== '') {
             <?php endif; ?>
 
             <div class="text-end mt-4">
-                <a href="dashboard_admin.php" class="btn-back btn btn-light border"><i
-                        class="bi bi-arrow-left me-1"></i> Kembali</a>
+                <a href="dashboard_admin.php" class="btn btn-back"></i> Kembali</a>
             </div>
         </div>
     </div>

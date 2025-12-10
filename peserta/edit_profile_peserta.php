@@ -96,29 +96,27 @@ $foto_profile = !empty($user['foto']) ? '../file/' . $user['foto'] : '../file/us
             gap: .5rem;
             font-weight: 500;
         }
-
-        .btn-save {
-            background-color: #00c853;
-            color: white;
-            border: none;
-            border-radius: .5rem;
-            font-weight: 500;
-            transition: 0.2s;
+        .btn.btn-save{
+            background-color: #00C853 !important; 
+            border-color: #00C853 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none !important;
         }
-
-        .btn-save:hover {
-            background-color: #02913f;
+        .btn.btn-save:hover, .btn.btn-save:focus{
+            background-color: #02913f !important; 
+            border-color: #02913f !important;
         }
-
-        .btn-cancel {
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            border-radius: .5rem;
-            font-weight: 500;
+        .btn.btn-cancel{
+            background-color: #00C853 !important; 
+            border-color: #00C853 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none !important;
         }
-
-        .btn-cancel:hover {
-            background-color: #e9ecef;
+        .btn.btn-cancel:hover, .btn.btn-cancel:focus{
+            background-color: #02913f !important; 
+            border-color: #02913f !important;
         }
 
         .form-label {

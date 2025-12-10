@@ -61,6 +61,30 @@ if ($error_msg)
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
         <link rel="stylesheet" href="../css/admin.min.css">
+        <style>
+            .btn.btn-secondary{
+                background-color: #00C853 !important; 
+                border-color: #00C853 !important;
+                color: #ffffff !important;
+                font-weight: bold;
+                text-decoration: none !important;
+            }
+            .btn.btn-secondary:hover, .btn.btn-secondary:focus{
+                background-color: #02913f !important; 
+                border-color: #02913f !important;
+            }
+            .btn.btn-success{
+                background-color: #00C853 !important; 
+                border-color: #00C853 !important;
+                color: #ffffff !important;
+                font-weight: bold;
+                text-decoration: none !important;
+            }
+            .btn.btn-success:hover, .btn.btn-success:focus{
+                background-color: #02913f !important; 
+                border-color: #02913f !important;
+            }
+        </style>
     </head>
 
     <body>
@@ -201,9 +225,7 @@ if ($error_msg)
                             <hr>
                             <div class="d-flex justify-content-end gap-3">
                                 <button type="reset" class="btn btn-secondary">Batal</button>
-                                <button type="submit" class="btn btn-success"><i
-                                        class="bi bi-person-plus me-2"></i>Tambahkan
-                                    Pengguna</button>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-person-plus me-2"></i>Tambahkan Pengguna</button>
                             </div>
                         </form>
 

@@ -34,7 +34,7 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Pengguna</title>
+    <title>Profil Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -101,16 +101,16 @@ $foto_profile = (!empty($user['foto']) ? '../file/' . $user['foto'] : '../file/u
         }
 
         .btn-edit {
-            background-color: #00c853;
-            color: white;
-            border: none;
-            border-radius: .5rem;
-            font-weight: 500;
-            transition: 0.2s;
+            background-color: #00C853 !important; 
+            border-color: #00C853 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            text-decoration: none !important;
         }
 
         .btn-edit:hover {
-            background-color: #02913f;
+            background-color: #02913f !important; 
+            border-color: #02913f !important;
         }
 
         .profile {
