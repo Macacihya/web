@@ -198,34 +198,34 @@ if ($result) {
         }
 
         .table-header .controls select.form-select {
-        border: 2px solid #198754; 
-        border-radius: 12px 12px 8px 8px; 
-        padding: 10px 12px;
-        background: #fff;
-        height: 46px;
-        box-shadow: none;
-        -webkit-appearance: menulist; 
-        -moz-appearance: menulist;
-        appearance: menulist;
-        background-image: none; 
-        padding-right: 24px;
-        padding-left: 8px;
-    } 
+            border: 2px solid #198754; 
+            border-radius: 12px 12px 8px 8px; 
+            padding: 10px 12px;
+            background: #fff;
+            height: 46px;
+            box-shadow: none;
+            -webkit-appearance: menulist; 
+            -moz-appearance: menulist;
+            appearance: menulist;
+            background-image: none; 
+            padding-right: 24px;
+            padding-left: 8px;
+        } 
         
         .table-header .controls input.form-control {
-        border: 2px solid #198754; 
-        border-radius: 12px;
-        padding: 10px 12px;
-        background: #fff;
-        height: 46px;
-        box-shadow: none;
-        background-image: none !important;
-        background-repeat: no-repeat !important;
-        padding-right: 12px !important; 
-        -webkit-appearance: none; 
-        -moz-appearance: none;
-        appearance: none;
-    }
+            border: 2px solid #198754; 
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: #fff;
+            height: 46px;
+            box-shadow: none;
+            background-image: none !important;
+            background-repeat: no-repeat !important;
+            padding-right: 12px !important; 
+            -webkit-appearance: none; 
+            -moz-appearance: none;
+            appearance: none;
+        }
 
         .table-header .controls .search-table input.form-control {
             height: 46px;
@@ -280,8 +280,7 @@ if ($result) {
                     <h4 class="fw-bold mb-4 ms-3">MENU</h4>
                     <ul class="nav flex-column">
                         <li>
-                            <a class="nav-link active" href="dashboard_peserta.php"><i
-                                    class="bi bi-grid me-2"></i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard_peserta.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
                         </li>
                     </ul>
                 </div>
@@ -289,8 +288,7 @@ if ($result) {
                 <div class="mt-auto px-3">
                     <ul class="nav flex-column mb-3">
                         <li>
-                            <a class="nav-link" href="profile_peserta.php"><i
-                                    class="bi bi-person-circle me-2"></i>Profile</a>
+                            <a class="nav-link" href="profile_peserta.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                         <li>
                             <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
