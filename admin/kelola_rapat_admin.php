@@ -106,7 +106,7 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
                             <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                         </li>
                         <li>
-                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                            <a id="logoutBtnMobile" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Keluar</a>
                         </li>
                     </ul>
                 </div>
@@ -134,7 +134,7 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
                     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profile</a>
                 </li>
                 <li>
-                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Logout</a>
+                    <a id="logoutBtn" class="nav-link text-danger" href="#"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Keluar</a>
                 </li>
             </ul>
         </div>
