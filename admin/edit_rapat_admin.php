@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 $id_notulen = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($id_notulen <= 0) {
-  echo "<script>alert('ID Notulen tidak valid!'); window.location.href='dashboard_admin.php';</script>";
+  echo "<script>showToast('ID Notulen tidak valid!', 'error'); setTimeout(() => window.location.href='dashboard_admin.php', 2000);</script>";
   exit;
 }
 
@@ -24,7 +24,7 @@ $result = $stmt->get_result();
 $notulen = $result->fetch_assoc();
 
 if (!$notulen) {
-  echo "<script>alert('Data notulen tidak ditemukan!'); window.location.href='dashboard_admin.php';</script>";
+  echo "<script>showToast('Data notulen tidak ditemukan!', 'error'); setTimeout(() => window.location.href='dashboard_admin.php', 2000);</script>";
   exit;
 }
 
@@ -335,19 +335,12 @@ foreach ($current_participants as $pid) {
                     json = JSON.parse(text);
                 } catch (err) {
                     console.error("Invalid JSON:", text);
-                    alert("Terjadi kesalahan server: " + text.substring(0, 100));
+                    showToast("Terjadi kesalahan server: " + text.substring(0, 50), 'error');
                     return;
                 }
 
                 if (json.success) {
-                    // Show Toast
-                    const toastEl = document.getElementById('successToast');
-                    if (toastEl && window.bootstrap) {
-                        const toast = new bootstrap.Toast(toastEl);
-                        toast.show();
-                    } else {
-                        alert("Notulen berhasil diperbarui!");
-                    }
+                    showToast('Notulen berhasil diperbarui!', 'success');
 
                     // Disable button
                     const submitBtn = document.querySelector('button[type="submit"]');
@@ -357,27 +350,31 @@ foreach ($current_participants as $pid) {
                         window.location.href = 'dashboard_admin.php';
                     }, 1500);
                 } else {
-                    alert(json.message || "Gagal menyimpan data.");
+                    showToast(json.message || "Gagal menyimpan data.", 'error');
                 }
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan: " + error.message);
+                showToast("Terjadi kesalahan: " + error.message, 'error');
             }
         });
 
         // Logout handlers
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
-            logoutBtn.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtn.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
         }
         const logoutBtnMobile = document.getElementById("logoutBtnMobile");
         if (logoutBtnMobile) {
-            logoutBtnMobile.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtnMobile.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
@@ -438,7 +435,7 @@ foreach ($current_participants as $pid) {
                 const selected = document.querySelectorAll('.notulen-checkbox:checked');
                 
                 if (selected.length === 0) {
-                    alert('Pilih minimal 1 peserta');
+                    showToast('Pilih minimal 1 peserta', 'warning');
                     return;
                 }
 
@@ -506,5 +503,6 @@ foreach ($current_participants as $pid) {
     // Handle pre-existing remove buttons (if any hardcoded) - Delegation above handles it
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/admin.js"></script>
 </body>
 </html>

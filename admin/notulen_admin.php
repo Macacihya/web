@@ -314,29 +314,22 @@ document.getElementById("notulenForm").addEventListener("submit", async function
         }
 
         if (json.success) {
-            // Show Toast
-            const toastEl = document.getElementById('successToast');
-            if (toastEl && window.bootstrap) {
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            } else {
-                // Fallback if toast fails
-                alert("Notulen berhasil disimpan!");
-            }
+            // Show custom toast
+            showToast('Notulen berhasil disimpan!', 'success');
 
             // Disable button to prevent double submit
             const submitBtn = document.querySelector('button[type="submit"]');
             if(submitBtn) submitBtn.disabled = true;
 
             setTimeout(() => {
-                location.href = 'dashboard_admin.php'; // Redirect to dashboard or reload
+                location.href = 'dashboard_admin.php';
             }, 1000);
         } else {
-            alert(json.message || "Gagal menyimpan data.");
+            showToast(json.message || "Gagal menyimpan data.", 'error');
         }
     } catch (error) {
         console.error(error);
-        alert("Terjadi kesalahan: " + error.message);
+        showToast("Terjadi kesalahan: " + error.message, 'error');
     }
 });
 
@@ -435,7 +428,22 @@ if (addButton) {
                     addedContainer.innerHTML = '<p class="text-muted">Belum ada peserta yang ditambahkan</p>';
                 }
             });
+            // Uncheck after adding
+            cb.checked = false;
         });
+        
+        // Uncheck "Select All" if it was checked
+        if (selectAll) selectAll.checked = false;
+
+        // Close Dropdown to reveal added list
+        const dropdownEl = document.getElementById('dropdownToggle');
+        if (dropdownEl && window.bootstrap) {
+            const dropdown = bootstrap.Dropdown.getOrCreateInstance(dropdownEl);
+            dropdown.hide();
+        }
+
+        // Show feedback
+        showToast('Peserta berhasil ditambahkan', 'success');
     });
 }
 
@@ -460,5 +468,7 @@ if (logoutBtnMobile) {
     });
 }
     </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/admin.js"></script>
 </body>
 </html>

@@ -2,8 +2,8 @@
 session_start();
 require_once __DIR__ . '/../koneksi.php';
 
-// Pastikan login
-if (!isset($_SESSION['user_id'])) {
+// Pastikan login dan role admin
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }
@@ -165,7 +165,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Total Peserta</h6>
-                    <h2 class="fw-bold text-success mb-0"><?php echo $totalPeserta; ?></h2>
+                    <h2 id="totalPesertaCard" class="fw-bold text-success mb-0"><?php echo $totalPeserta; ?></h2>
                     <small class="text-muted">Orang</small>
                 </div>
             </div>
@@ -174,7 +174,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Total Notulen</h6>
-                    <h2 class="fw-bold text-success mb-0"><?php echo $totalNotulen; ?></h2>
+                    <h2 id="totalNotulenCard" class="fw-bold text-success mb-0"><?php echo $totalNotulen; ?></h2>
                     <small class="text-muted">Dokumen</small>
                 </div>
             </div>
@@ -183,7 +183,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Belum Dilihat</h6>
-                    <h2 class="fw-bold text-danger mb-0"><?php echo $totalUnread; ?></h2>
+                    <h2 id="totalUnreadCard" class="fw-bold text-danger mb-0"><?php echo $totalUnread; ?></h2>
                     <small class="text-muted">Notulen</small>
                 </div>
             </div>
@@ -417,7 +417,8 @@ while ($row = $result->fetch_assoc()) {
                 const id = btn.dataset.id;
                 if (!id) return;
 
-                if (!confirm("Yakin mau hapus data ini?")) return;
+                const confirmed = await showConfirm("Yakin mau menghapus data ini? Tindakan ini tidak dapat dibatalkan.");
+                if (!confirmed) return;
 
                 try {
                     const res = await fetch('../proses/proses_hapus_notulen.php', {
@@ -428,31 +429,58 @@ while ($row = $result->fetch_assoc()) {
                     const json = await res.json();
                     if (json.success) {
                         const idx = notulenData.findIndex(n => String(n.id) === String(id));
-                        if (idx !== -1) notulenData.splice(idx, 1);
+                        
+                        // Check if deleted notulen was viewed or not
+                        let wasViewed = false;
+                        if (idx !== -1) {
+                            wasViewed = notulenData[idx].is_viewed;
+                            notulenData.splice(idx, 1);
+                        }
+                        
+                        // Update highlight cards
+                        const totalNotulenCard = document.getElementById('totalNotulenCard');
+                        const totalUnreadCard = document.getElementById('totalUnreadCard');
+                        
+                        if (totalNotulenCard) {
+                            const currentTotal = parseInt(totalNotulenCard.textContent);
+                            totalNotulenCard.textContent = currentTotal - 1;
+                        }
+                        
+                        // Only decrease unread count if the deleted notulen was not viewed
+                        if (!wasViewed && totalUnreadCard) {
+                            const currentUnread = parseInt(totalUnreadCard.textContent);
+                            totalUnreadCard.textContent = Math.max(0, currentUnread - 1);
+                        }
+                        
                         filterPembuat.innerHTML = '<option value="">Semua Pembuat</option>';
                         populateFilterPembuat();
                         updateTable();
+                        showToast('Notulen berhasil dihapus!', 'success');
                     } else {
-                        alert(json.message || 'Gagal menghapus notulen.');
+                        showToast(json.message || 'Gagal menghapus notulen.', 'error');
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Terjadi kesalahan saat menghapus.');
+                    showToast('Terjadi kesalahan saat menghapus.', 'error');
                 }
             });
 
             function setupLogoutButtons() {
                 if (logoutBtn) {
-                    logoutBtn.addEventListener("click", function () {
-                        if (confirm("Apakah kamu yakin ingin logout?")) {
+                    logoutBtn.addEventListener("click", async function (e) {
+                        e.preventDefault();
+                        const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                        if (confirmed) {
                             localStorage.removeItem("adminData");
                             window.location.href = "../proses/proses_logout.php";
                         }
                     });
                 }
                 if (logoutBtnMobile) {
-                    logoutBtnMobile.addEventListener("click", function () {
-                        if (confirm("Apakah kamu yakin ingin logout?")) {
+                    logoutBtnMobile.addEventListener("click", async function (e) {
+                        e.preventDefault();
+                        const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                        if (confirmed) {
                             localStorage.removeItem("adminData");
                             window.location.href = "../proses/proses_logout.php";
                         }

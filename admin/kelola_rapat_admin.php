@@ -331,11 +331,12 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
         // AJAX delete user (versi non-reload)
         async function deleteUser(id, btn) {
             if (id === CURRENT_ADMIN_ID) {
-                showAlert('Anda tidak dapat menghapus akun Anda sendiri.', 'danger');
+                showToast('Anda tidak dapat menghapus akun Anda sendiri.', 'warning');
                 return;
             }
 
-            if (!confirm("Yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.")) {
+            const confirmed = await showConfirm("Yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat dibatalkan.");
+            if (!confirmed) {
                 return;
             }
 
@@ -363,13 +364,13 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
                     if (currentPage > totalPages) currentPage = totalPages;
 
                     renderTable(filteredUsers);
-                    showAlert(result.message || 'Pengguna berhasil dihapus.', 'success');
+                    showToast(result.message || 'Pengguna berhasil dihapus.', 'success');
                 } else {
-                    showAlert(result.message || 'Gagal menghapus pengguna.', 'danger');
+                    showToast(result.message || 'Gagal menghapus pengguna.', 'error');
                 }
             } catch (err) {
                 console.error('Error:', err);
-                showAlert('Terjadi kesalahan saat menghubungi server.', 'danger');
+                showToast('Terjadi kesalahan saat menghubungi server.', 'error');
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -432,16 +433,20 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
         // Logout handlers
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
-            logoutBtn.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtn.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
         }
         const logoutBtnMobile = document.getElementById("logoutBtnMobile");
         if (logoutBtnMobile) {
-            logoutBtnMobile.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtnMobile.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
@@ -450,6 +455,7 @@ $current_admin_id = $_SESSION['user_id'] ?? 0;
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/admin.js"></script>
 </body>
 
 </html>

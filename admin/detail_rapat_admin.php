@@ -21,7 +21,7 @@ $userName = $userData['nama'] ?? 'Admin';
 $id_notulen = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($id_notulen <= 0) {
-    echo "<script>alert('ID Notulen tidak valid!'); window.location.href='dashboard_admin.php';</script>";
+    echo "<script>showToast('ID Notulen tidak valid!', 'error'); setTimeout(() => window.location.href='dashboard_admin.php', 2000);</script>";
     exit;
 }
 
@@ -42,7 +42,7 @@ $result = $stmt->get_result();
 $notulen = $result->fetch_assoc();
 
 if (!$notulen) {
-    echo "<script>alert('Data notulen tidak ditemukan!'); window.location.href='dashboard_admin.php';</script>";
+    echo "<script>showToast('Data notulen tidak ditemukan!', 'error'); setTimeout(() => window.location.href='dashboard_admin.php', 2000);</script>";
     exit;
 }
 
@@ -265,16 +265,20 @@ if (trim($peserta_raw) !== '') {
         // Logout handlers
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
-            logoutBtn.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtn.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
         }
         const logoutBtnMobile = document.getElementById("logoutBtnMobile");
         if (logoutBtnMobile) {
-            logoutBtnMobile.addEventListener("click", function () {
-                if (confirm("Apakah kamu yakin ingin logout?")) {
+            logoutBtnMobile.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
@@ -282,6 +286,7 @@ if (trim($peserta_raw) !== '') {
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/admin.js"></script>
 </body>
 
 </html>

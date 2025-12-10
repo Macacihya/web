@@ -163,7 +163,7 @@ if ($result) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Total Peserta</h6>
-                    <h2 class="fw-bold text-success mb-0"><?php echo $totalPeserta; ?></h2>
+                    <h2 id="totalPesertaCard" class="fw-bold text-success mb-0"><?php echo $totalPeserta; ?></h2>
                     <small class="text-muted">Orang</small>
                 </div>
             </div>
@@ -172,7 +172,7 @@ if ($result) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Total Notulen</h6>
-                    <h2 class="fw-bold text-success mb-0"><?php echo $totalNotulen; ?></h2>
+                    <h2 id="totalNotulenCard" class="fw-bold text-success mb-0"><?php echo $totalNotulen; ?></h2>
                     <small class="text-muted">Dokumen</small>
                 </div>
             </div>
@@ -181,7 +181,7 @@ if ($result) {
             <div class="col">
                 <div class="highlight-card h-100 p-3 rounded-3 border-success shadow-sm d-flex flex-column justify-content-center align-items-center text-center bg-white" style="border: 1px solid #198754;">
                     <h6 class="text-secondary mb-2">Belum Dilihat</h6>
-                    <h2 class="fw-bold text-danger mb-0"><?php echo $totalUnread; ?></h2>
+                    <h2 id="totalUnreadCard" class="fw-bold text-danger mb-0"><?php echo $totalUnread; ?></h2>
                     <small class="text-muted">Notulen</small>
                 </div>
             </div>

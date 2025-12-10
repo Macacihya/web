@@ -238,22 +238,23 @@ if ($error_msg)
             const params = new URLSearchParams(window.location.search);
 
             if (params.get("added") === "1") {
-                alert("Pengguna berhasil ditambahkan!");
+                showToast("Pengguna berhasil ditambahkan!", 'success');
                 // hapus param biar gak muncul lagi saat refresh
                 params.delete("added");
                 window.history.replaceState({}, "", window.location.pathname);
             }
 
             if (params.get("added") === "0") {
-                alert("Gagal menambahkan pengguna!");
+                showToast("Gagal menambahkan pengguna!", 'error');
                 params.delete("added");
                 window.history.replaceState({}, "", window.location.pathname);
             }
         </script>
         <script>
             // Logout function
-            document.getElementById("logoutBtn").addEventListener("click", function () {
-                const confirmLogout = confirm("Apakah kamu yakin ingin logout?");
+            document.getElementById("logoutBtn").addEventListener("click", async function (e) {
+                e.preventDefault();
+                const confirmLogout = await showConfirm("Apakah kamu yakin ingin logout?");
                 if (confirmLogout) {
                     // Path logout ini SUDAH BENAR
                     window.location.href = "../proses/proses_logout.php";
@@ -263,7 +264,7 @@ if ($error_msg)
             const logoutBtnMobile = document.getElementById("logoutBtnMobile");
             if (logoutBtnMobile) {
                 logoutBtnMobile.addEventListener("click", function () {
-                    const konfirmasiLogout = confirm("Apakah kamu yakin ingin logout?");
+                    const konfirmasiLogout = await showConfirm("Apakah kamu yakin ingin logout?");
                     if (konfirmasiLogout) {
                         // Path logout ini SUDAH BENAR
                         window.location.href = "../proses/proses_logout.php";
@@ -273,6 +274,7 @@ if ($error_msg)
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="../js/admin.js"></script>
         <?php
         if (session_status() === PHP_SESSION_NONE)
             session_start();
@@ -280,7 +282,7 @@ if ($error_msg)
         if (!empty($_SESSION['success_message'])) {
             $msg = $_SESSION['success_message'];
             unset($_SESSION['success_message']); // supaya tidak muncul lagi kalau reload
-            echo "<script>alert('$msg');</script>";
+            echo "<script>showToast('$msg', 'success');</script>";
         }
         ?>
     </body>

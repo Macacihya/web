@@ -1912,3 +1912,210 @@ body {
     width: 100% !important;
   }
 }
+
+/* ============================================
+   CUSTOM MODAL & TOAST STYLES
+   ============================================ */
+
+/* Custom Confirmation Modal */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-modal-overlay.show {
+  opacity: 1;
+}
+
+.custom-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 450px;
+  width: 90%;
+  border: 3px solid #00c853;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.custom-modal-overlay.show .custom-modal {
+  transform: scale(1);
+}
+
+.custom-modal-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.custom-modal-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.custom-modal-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.custom-modal-btn-cancel {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.custom-modal-btn-cancel:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.custom-modal-btn-confirm {
+  background-color: #00c853;
+  color: white;
+}
+
+.custom-modal-btn-confirm:hover {
+  background-color: #00b248;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  background: white;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 320px;
+  max-width: 450px;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: auto;
+  border-left: 6px solid #ddd; /* Default border */
+}
+
+/* Toast Variants */
+.toast-success {
+  border-left-color: #00c853;
+}
+.toast-success i {
+  color: #00c853;
+  font-size: 1.5rem;
+}
+
+.toast-error {
+  border-left-color: #dc3545;
+}
+.toast-error i {
+  color: #dc3545;
+  font-size: 1.5rem;
+}
+
+.toast-warning {
+  border-left-color: #ffc107;
+}
+.toast-warning i {
+  color: #ffc107;
+  font-size: 1.5rem;
+}
+
+.toast-info {
+  border-left-color: #0d6efd;
+}
+.toast-info i {
+  color: #0d6efd;
+  font-size: 1.5rem;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast span {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .custom-modal {
+    max-width: 95%;
+    padding: 1.5rem;
+  }
+
+  .custom-modal-message {
+    font-size: 1rem;
+  }
+
+  .custom-modal-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
+  }
+}
