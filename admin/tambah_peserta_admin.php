@@ -276,19 +276,20 @@ if ($error_msg)
             // Logout function
             document.getElementById("logoutBtn").addEventListener("click", async function (e) {
                 e.preventDefault();
-                const confirmLogout = await showConfirm("Apakah kamu yakin ingin logout?");
-                if (confirmLogout) {
-                    // Path logout ini SUDAH BENAR
+                const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                if (confirmed) {
+                    localStorage.removeItem("adminData");
                     window.location.href = "../proses/proses_logout.php";
                 }
             });
 
             const logoutBtnMobile = document.getElementById("logoutBtnMobile");
             if (logoutBtnMobile) {
-                logoutBtnMobile.addEventListener("click", function () {
-                    const konfirmasiLogout = await showConfirm("Apakah kamu yakin ingin logout?");
-                    if (konfirmasiLogout) {
-                        // Path logout ini SUDAH BENAR
+                logoutBtnMobile.addEventListener("click", async function (e) {
+                    e.preventDefault();
+                    const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+                    if (confirmed) {
+                        localStorage.removeItem("adminData");
                         window.location.href = "../proses/proses_logout.php";
                     }
                 });

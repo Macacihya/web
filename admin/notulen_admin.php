@@ -460,8 +460,10 @@ if (addButton) {
 // Logout handlers
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-        if (confirm("Apakah kamu yakin ingin logout?")) {
+    logoutBtn.addEventListener("click", async function (e) {
+        e.preventDefault();
+        const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+        if (confirmed) {
             localStorage.removeItem("adminData");
             window.location.href = "../proses/proses_logout.php";
         }
@@ -470,8 +472,10 @@ if (logoutBtn) {
 
 const logoutBtnMobile = document.getElementById("logoutBtnMobile");
 if (logoutBtnMobile) {
-    logoutBtnMobile.addEventListener("click", function () {
-        if (confirm("Apakah kamu yakin ingin logout?")) {
+    logoutBtnMobile.addEventListener("click", async function (e) {
+        e.preventDefault();
+        const confirmed = await showConfirm("Apakah kamu yakin ingin logout?");
+        if (confirmed) {
             localStorage.removeItem("adminData");
             window.location.href = "../proses/proses_logout.php";
         }
