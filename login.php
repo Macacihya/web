@@ -45,23 +45,6 @@ if ($TEST_MODE) {
 
 <div class="auth-container">
 
-    <!-- DEBUG INFO -->
-    <?php if ($TEST_MODE): ?>
-    <div style="position: fixed; top: 10px; right: 10px; background: #f8f9fa; border: 2px solid #dc3545; padding: 15px; border-radius: 5px; font-size: 12px; max-width: 300px; z-index: 9999;">
-        <strong style="color: #dc3545;">🔧 DEBUG INFO</strong>
-        <hr style="margin: 5px 0;">
-        <div><strong>Database:</strong> 
-            <?php echo $db_ok ? '<span style="color: green;">✓ Connected</span>' : '<span style="color: red;">✗ Error</span>'; ?>
-        </div>
-        <div><strong>Users in DB:</strong> <?php echo $users_count; ?></div>
-        <div><strong>Password Hash:</strong> 
-            <?php echo $verify ? '<span style="color: green;">✓ Valid</span>' : '<span style="color: red;">✗ Invalid</span>'; ?>
-        </div>
-        <hr style="margin: 5px 0;">
-        <div style="color: #666;">Test: lopolo9090</div>
-    </div>
-    <?php endif; ?>
-
     <!-- SISI KIRI -->
     <div class="auth-sidebar">
         <h1>
