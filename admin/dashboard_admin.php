@@ -114,7 +114,7 @@ while ($row = $result->fetch_assoc()) {
     <!-- Sidebar (desktop) -->
     <aside class="sidebar-content d-none d-lg-flex flex-column justify-content-between position-fixed">
         <div>
-            <h4 class="fw-bold mb-4 ms-3">MENU</h4>
+            <h4 class="fw-bold mb-4 ms-3">SmartNote</h4>
             <ul class="nav flex-column">
                 <li>
                     <a class="nav-link active" href="dashboard_admin.php"><i class="bi bi-grid me-2"></i>Dashboard</a>
@@ -141,7 +141,7 @@ while ($row = $result->fetch_assoc()) {
     <main class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h4><b>Dashboard Notulis</b></h4>
+                <h4><b>Dashboard Admin</b></h4>
             </div>
             <div class="d-flex align-items-center gap-3">
                 <div class="text-end">
