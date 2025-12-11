@@ -35,6 +35,7 @@ $foto_profile = !empty($user['foto']) ? '../file/' . $user['foto'] : '../file/us
     <title>Edit Profil Pengguna</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" />    
     <link rel="stylesheet" href="../css/admin.min.css">
 
     <style>
@@ -216,7 +217,15 @@ $foto_profile = !empty($user['foto']) ? '../file/' . $user['foto'] : '../file/us
         </div>
 
         <div class="profile-box">
-            <h5 class="fw-semibold mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Profil Pengguna</h5>
+            <h5 class="fw-semibold mb-4">
+                <span class="material-symbols-outlined me-2" style="
+                    font-size:23px;
+                    line-height: 1;
+                    vertical-align: -4px;">
+                    person_edit
+                </span>
+                Edit Profil Pengguna
+            </h5>
 
             <form action="../proses/proses_edit_profile.php" method="POST" enctype="multipart/form-data">
                 <div class="text-center mb-4">
